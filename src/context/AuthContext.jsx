@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext(null);
@@ -6,183 +6,170 @@ const AuthContext = createContext(null);
 const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 menit auto-logout
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [inactivityTimer, setInactivityTimer] = useState(null);
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('sipandu_user');
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [loading, setLoading] = useState(false);
+  const timerRef = useRef(null);
 
-  // Check session on mount
   useEffect(() => {
-    checkSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        await loadProfile(session.user);
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setProfile(null);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+    if (user) {
+      localStorage.setItem('sipandu_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('sipandu_user');
+    }
+  }, [user]);
 
   // Inactivity auto-logout
   useEffect(() => {
     if (!user) return;
 
     const resetTimer = () => {
-      if (inactivityTimer) clearTimeout(inactivityTimer);
-      const timer = setTimeout(() => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
         logout();
+        alert('Sesi Anda telah berakhir karena tidak aktif selama 30 menit. Silakan login kembali.');
       }, INACTIVITY_TIMEOUT);
-      setInactivityTimer(timer);
     };
 
-    const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'mousemove'];
     events.forEach(event => window.addEventListener(event, resetTimer));
     resetTimer();
 
     return () => {
       events.forEach(event => window.removeEventListener(event, resetTimer));
-      if (inactivityTimer) clearTimeout(inactivityTimer);
+      if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [user]);
 
-  const checkSession = async () => {
+  const login = async (email, password) => {
+    setLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        await loadProfile(session.user);
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .eq('password', password)
+        .single();
+
+      if (error || !data) {
+        setLoading(false);
+        return { success: false, message: 'Email atau password salah' };
       }
-    } catch (err) {
-      console.error('Session check error:', err);
-    }
-    setLoading(false);
-  };
 
-  const loadProfile = async (authUser) => {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('email', authUser.email)
-      .single();
-
-    if (data) {
       const userData = {
         id: data.id,
-        authId: authUser.id,
         email: data.email,
         name: data.name,
         role: data.role,
         pengawasId: data.pengawas_id,
         madrasahId: data.madrasah_id,
       };
+
       setUser(userData);
-      setProfile(data);
-    } else {
-      // User exists in auth but not in users table yet
-      setUser({
-        id: authUser.id,
-        authId: authUser.id,
-        email: authUser.email,
-        name: authUser.email.split('@')[0],
-        role: 'madrasah', // default role
-        pengawasId: null,
-        madrasahId: null,
-      });
-    }
-  };
-
-  const login = async (email, password) => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        setLoading(false);
-        if (error.message.includes('Invalid login')) {
-          return { success: false, message: 'Email atau password salah' };
-        }
-        if (error.message.includes('Email not confirmed')) {
-          return { success: false, message: 'Email belum diverifikasi. Cek inbox email Anda.' };
-        }
-        return { success: false, message: error.message };
-      }
-
-      await loadProfile(data.user);
       setLoading(false);
-      return { success: true };
+      return { success: true, user: userData };
     } catch (err) {
       setLoading(false);
       return { success: false, message: 'Terjadi kesalahan koneksi' };
     }
   };
 
-  const register = async (email, password, name, role = 'madrasah') => {
+  const changePassword = async (currentPassword, newPassword) => {
+    if (!user) return { success: false, message: 'Tidak ada user login' };
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { name, role },
-        },
-      });
+      // Verify current password
+      const { data: check } = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', user.id)
+        .eq('password', currentPassword)
+        .single();
 
-      if (error) {
-        if (error.message.includes('already registered')) {
-          return { success: false, message: 'Email sudah terdaftar' };
-        }
-        return { success: false, message: error.message };
-      }
+      if (!check) return { success: false, message: 'Password lama salah' };
 
-      // Insert into users table
-      await supabase.from('users').insert({
-        email,
-        name,
-        role,
-        password: '(managed by Supabase Auth)',
-      });
+      const { error } = await supabase
+        .from('users')
+        .update({ password: newPassword })
+        .eq('id', user.id);
 
-      return { success: true, message: 'Registrasi berhasil! Cek email untuk verifikasi.' };
-    } catch (err) {
-      return { success: false, message: 'Terjadi kesalahan' };
-    }
-  };
-
-  const resetPassword = async (email) => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-
-      if (error) return { success: false, message: error.message };
-      return { success: true, message: 'Link reset password telah dikirim ke email Anda.' };
-    } catch (err) {
-      return { success: false, message: 'Terjadi kesalahan' };
-    }
-  };
-
-  const updatePassword = async (newPassword) => {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
-
-      if (error) return { success: false, message: error.message };
+      if (error) return { success: false, message: 'Gagal mengubah password' };
       return { success: true, message: 'Password berhasil diubah' };
     } catch (err) {
       return { success: false, message: 'Terjadi kesalahan' };
     }
   };
 
-  const logout = async () => {
-    await supabase.auth.signOut();
+  const addUser = async (userData) => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .insert({
+          email: userData.email,
+          name: userData.name,
+          role: userData.role,
+          password: userData.password,
+          pengawas_id: userData.pengawasId || null,
+          madrasah_id: userData.madrasahId || null,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        if (error.message.includes('duplicate')) return { success: false, message: 'Email sudah terdaftar' };
+        return { success: false, message: error.message };
+      }
+      return { success: true, data };
+    } catch (err) {
+      return { success: false, message: 'Terjadi kesalahan' };
+    }
+  };
+
+  const deleteUser = async (id) => {
+    try {
+      const { error } = await supabase.from('users').delete().eq('id', id);
+      if (error) return { success: false, message: error.message };
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: 'Terjadi kesalahan' };
+    }
+  };
+
+  const getUsers = async () => {
+    const { data } = await supabase.from('users').select('id, email, name, role, pengawas_id, madrasah_id, created_at').order('name');
+    return data || [];
+  };
+
+  const updateUserRole = async (id, role, pengawasId, madrasahId) => {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ role, pengawas_id: pengawasId || null, madrasah_id: madrasahId || null })
+        .eq('id', id);
+      if (error) return { success: false, message: error.message };
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: 'Terjadi kesalahan' };
+    }
+  };
+
+  const resetUserPassword = async (id, newPassword) => {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ password: newPassword })
+        .eq('id', id);
+      if (error) return { success: false, message: error.message };
+      return { success: true, message: 'Password berhasil direset' };
+    } catch (err) {
+      return { success: false, message: 'Terjadi kesalahan' };
+    }
+  };
+
+  const logout = () => {
     setUser(null);
-    setProfile(null);
+    localStorage.removeItem('sipandu_user');
   };
 
   const hasRole = (...roles) => {
@@ -191,8 +178,8 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{
-      user, profile, loading, login, logout, register,
-      resetPassword, updatePassword, hasRole
+      user, loading, login, logout, hasRole,
+      changePassword, addUser, deleteUser, getUsers, updateUserRole, resetUserPassword
     }}>
       {children}
     </AuthContext.Provider>

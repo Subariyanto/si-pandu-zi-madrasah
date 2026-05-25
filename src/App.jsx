@@ -4,7 +4,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { DataProvider } from './context/DataContext';
 import Layout from './components/Layout';
 import LoginPage from './pages/LoginPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
+
 import DashboardPage from './pages/DashboardPage';
 import PengawasPage from './pages/PengawasPage';
 import MadrasahPage from './pages/MadrasahPage';
@@ -36,7 +36,7 @@ function AppRoutes() {
     <Routes>
       {/* Public routes */}
       <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
-      <Route path="/reset-password" element={<ResetPasswordPage />} />
+
       <Route path="/publik/survei" element={<PublikSurveiPage />} />
       <Route path="/publik/pengaduan" element={<PublikPengaduanPage />} />
 

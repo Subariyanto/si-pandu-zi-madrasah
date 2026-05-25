@@ -1,17 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { supabase } from '../lib/supabase';
-import { Save, User, Key, Users, Plus, Trash2, Edit, X } from 'lucide-react';
+import { useData } from '../context/DataContext';
+import { Save, User, Key, Users, Plus, Trash2, RotateCcw, X } from 'lucide-react';
 
 export default function PengaturanPage() {
-  const { user, updatePassword, hasRole } = useAuth();
+  const { user, changePassword, addUser, deleteUser, getUsers, updateUserRole, resetUserPassword, hasRole } = useAuth();
+  const { pengawas, madrasah } = useData();
   const [passwordMsg, setPasswordMsg] = useState('');
-  const [passwordForm, setPasswordForm] = useState({ new: '', confirm: '' });
+  const [passwordForm, setPasswordForm] = useState({ current: '', new: '', confirm: '' });
   const [users, setUsers] = useState([]);
   const [showUsers, setShowUsers] = useState(false);
   const [showAddUser, setShowAddUser] = useState(false);
-  const [newUser, setNewUser] = useState({ email: '', name: '', role: 'madrasah', password: '' });
+  const [newUser, setNewUser] = useState({ email: '', name: '', role: 'madrasah', password: '', pengawasId: '', madrasahId: '' });
   const [addMsg, setAddMsg] = useState('');
+  const [resetMsg, setResetMsg] = useState('');
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
@@ -24,18 +26,18 @@ export default function PengaturanPage() {
       setPasswordMsg('❌ Password minimal 6 karakter');
       return;
     }
-    const result = await updatePassword(passwordForm.new);
+    const result = await changePassword(passwordForm.current, passwordForm.new);
     if (result.success) {
-      setPasswordMsg('✅ Password berhasil diubah');
-      setPasswordForm({ new: '', confirm: '' });
+      setPasswordMsg('✅ ' + result.message);
+      setPasswordForm({ current: '', new: '', confirm: '' });
     } else {
-      setPasswordMsg(`❌ ${result.message}`);
+      setPasswordMsg('❌ ' + result.message);
     }
   };
 
   const loadUsers = async () => {
-    const { data } = await supabase.from('users').select('*').order('name');
-    if (data) setUsers(data);
+    const data = await getUsers();
+    setUsers(data);
     setShowUsers(true);
   };
 
@@ -46,29 +48,31 @@ export default function PengaturanPage() {
       setAddMsg('❌ Password minimal 6 karakter');
       return;
     }
-
-    // Create auth user via Supabase (admin invite not available with anon key)
-    // Instead, insert into users table - they'll need to register via the app
-    const { error } = await supabase.from('users').insert({
-      email: newUser.email,
-      name: newUser.name,
-      role: newUser.role,
-      password: newUser.password,
-    });
-
-    if (error) {
-      setAddMsg(`❌ ${error.message}`);
-    } else {
-      setAddMsg('✅ User berhasil ditambahkan. User perlu registrasi di halaman login dengan email & password yang sama.');
-      setNewUser({ email: '', name: '', role: 'madrasah', password: '' });
+    const result = await addUser(newUser);
+    if (result.success) {
+      setAddMsg('✅ User berhasil ditambahkan');
+      setNewUser({ email: '', name: '', role: 'madrasah', password: '', pengawasId: '', madrasahId: '' });
       loadUsers();
+    } else {
+      setAddMsg('❌ ' + result.message);
     }
   };
 
   const handleDeleteUser = async (id, email) => {
+    if (email === user.email) { alert('Tidak bisa menghapus akun sendiri'); return; }
     if (!confirm(`Hapus user ${email}?`)) return;
-    await supabase.from('users').delete().eq('id', id);
+    await deleteUser(id);
     loadUsers();
+  };
+
+  const handleResetPassword = async (id, email) => {
+    const newPass = prompt(`Reset password untuk ${email}.\nMasukkan password baru (min 6 karakter):`);
+    if (!newPass || newPass.length < 6) { alert('Password minimal 6 karakter'); return; }
+    const result = await resetUserPassword(id, newPass);
+    if (result.success) {
+      setResetMsg(`✅ Password ${email} berhasil direset`);
+      setTimeout(() => setResetMsg(''), 3000);
+    }
   };
 
   return (
@@ -77,7 +81,7 @@ export default function PengaturanPage() {
 
       {/* Profile Info */}
       <div className="card max-w-lg">
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-4 mb-4">
           <div className="w-16 h-16 bg-kemenag-green rounded-full flex items-center justify-center">
             <User className="text-white" size={28} />
           </div>
@@ -93,8 +97,8 @@ export default function PengaturanPage() {
             <span className="text-gray-800 dark:text-white capitalize font-medium">{user?.role === 'ketua' ? 'Ketua Pokjawas' : user?.role}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-500">Auto-logout</span>
-            <span className="text-gray-800 dark:text-white">30 menit tidak aktif</span>
+            <span className="text-gray-500">Keamanan</span>
+            <span className="text-gray-800 dark:text-white">Auto-logout 30 menit</span>
           </div>
         </div>
       </div>
@@ -105,7 +109,11 @@ export default function PengaturanPage() {
           <Key size={20} className="text-kemenag-green" />
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Ubah Password</h3>
         </div>
-        <form onSubmit={handleChangePassword} className="space-y-4">
+        <form onSubmit={handleChangePassword} className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password Lama</label>
+            <input type="password" value={passwordForm.current} onChange={(e) => setPasswordForm({...passwordForm, current: e.target.value})} className="input-field" placeholder="Masukkan password lama" required />
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password Baru</label>
             <input type="password" value={passwordForm.new} onChange={(e) => setPasswordForm({...passwordForm, new: e.target.value})} className="input-field" placeholder="Minimal 6 karakter" required />
@@ -129,9 +137,11 @@ export default function PengaturanPage() {
             </div>
             <div className="flex gap-2">
               <button onClick={loadUsers} className="btn-secondary text-sm">Muat Data</button>
-              <button onClick={() => setShowAddUser(true)} className="btn-primary text-sm flex items-center gap-1"><Plus size={14} /> Tambah</button>
+              <button onClick={() => { setShowAddUser(true); setAddMsg(''); }} className="btn-primary text-sm flex items-center gap-1"><Plus size={14} /> Tambah User</button>
             </div>
           </div>
+
+          {resetMsg && <p className="text-sm text-green-600 mb-3">{resetMsg}</p>}
 
           {showUsers && (
             <div className="overflow-x-auto">
@@ -148,13 +158,17 @@ export default function PengaturanPage() {
                   {users.map(u => (
                     <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td className="table-cell font-medium">{u.name}</td>
-                      <td className="table-cell">{u.email}</td>
+                      <td className="table-cell text-xs">{u.email}</td>
                       <td className="table-cell capitalize">{u.role}</td>
                       <td className="table-cell">
-                        <button onClick={() => handleDeleteUser(u.id, u.email)} className="text-red-600 hover:text-red-800"><Trash2 size={14} /></button>
+                        <div className="flex gap-2">
+                          <button onClick={() => handleResetPassword(u.id, u.email)} className="text-blue-600 hover:text-blue-800" title="Reset Password"><RotateCcw size={14} /></button>
+                          <button onClick={() => handleDeleteUser(u.id, u.email)} className="text-red-600 hover:text-red-800" title="Hapus"><Trash2 size={14} /></button>
+                        </div>
                       </td>
                     </tr>
                   ))}
+                  {users.length === 0 && <tr><td colSpan="4" className="table-cell text-center text-gray-400">Klik "Muat Data" untuk melihat user</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -163,14 +177,14 @@ export default function PengaturanPage() {
           {/* Add User Modal */}
           {showAddUser && (
             <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Tambah Pengguna</h3>
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Tambah Pengguna Baru</h3>
                   <button onClick={() => setShowAddUser(false)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
                 </div>
                 <form onSubmit={handleAddUser} className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Lengkap</label>
                     <input type="text" value={newUser.name} onChange={(e) => setNewUser({...newUser, name: e.target.value})} className="input-field" required />
                   </div>
                   <div>
@@ -190,6 +204,24 @@ export default function PengaturanPage() {
                       <option value="madrasah">Kepala Madrasah</option>
                     </select>
                   </div>
+                  {newUser.role === 'pengawas' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pengawas</label>
+                      <select value={newUser.pengawasId} onChange={(e) => setNewUser({...newUser, pengawasId: e.target.value})} className="input-field">
+                        <option value="">Pilih Pengawas</option>
+                        {pengawas.map(p => <option key={p.id} value={p.id}>{p.nama}</option>)}
+                      </select>
+                    </div>
+                  )}
+                  {newUser.role === 'madrasah' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Madrasah</label>
+                      <select value={newUser.madrasahId} onChange={(e) => setNewUser({...newUser, madrasahId: e.target.value})} className="input-field">
+                        <option value="">Pilih Madrasah</option>
+                        {madrasah.map(m => <option key={m.id} value={m.id}>{m.nama}</option>)}
+                      </select>
+                    </div>
+                  )}
                   {addMsg && <p className={`text-sm ${addMsg.startsWith('✅') ? 'text-green-600' : 'text-red-600'}`}>{addMsg}</p>}
                   <div className="flex gap-3 pt-2">
                     <button type="submit" className="btn-primary flex-1">Tambah</button>
