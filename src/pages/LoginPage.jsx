@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Lock, Mail, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -15,7 +15,7 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(''); setLoading(true);
-    const result = await login(email, password);
+    const result = await login(identifier, password);
     setLoading(false);
     if (result.success) {
       navigate('/dashboard');
@@ -49,10 +49,10 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email / Username / NIP</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="input-field pl-10" placeholder="email@zipokjawas.id" required />
+                <input type="text" value={identifier} onChange={(e) => setIdentifier(e.target.value)} className="input-field pl-10" placeholder="Email, username, atau NIP" required />
               </div>
             </div>
 
