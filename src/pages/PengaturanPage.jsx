@@ -215,7 +215,10 @@ export default function PengaturanPage() {
                   {newUser.role === 'pengawas' && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pengawas</label>
-                      <select value={newUser.pengawasId} onChange={(e) => setNewUser({...newUser, pengawasId: e.target.value})} className="input-field">
+                      <select value={newUser.pengawasId} onChange={(e) => {
+                        const selP = pengawas.find(p => p.id === e.target.value);
+                        setNewUser({...newUser, pengawasId: e.target.value, name: selP?.nama || newUser.name, nip: selP?.nip || newUser.nip});
+                      }} className="input-field">
                         <option value="">Pilih Pengawas</option>
                         {pengawas.map(p => <option key={p.id} value={p.id}>{p.nama}</option>)}
                       </select>
@@ -224,9 +227,12 @@ export default function PengaturanPage() {
                   {newUser.role === 'madrasah' && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Madrasah</label>
-                      <select value={newUser.madrasahId} onChange={(e) => setNewUser({...newUser, madrasahId: e.target.value})} className="input-field">
+                      <select value={newUser.madrasahId} onChange={(e) => {
+                        const selM = madrasah.find(m => m.id === e.target.value);
+                        setNewUser({...newUser, madrasahId: e.target.value, name: selM?.kepalaMadrasah || newUser.name});
+                      }} className="input-field">
                         <option value="">Pilih Madrasah</option>
-                        {madrasah.map(m => <option key={m.id} value={m.id}>{m.nama}</option>)}
+                        {madrasah.map(m => <option key={m.id} value={m.id}>{m.nama} - {m.kepalaMadrasah}</option>)}
                       </select>
                     </div>
                   )}
