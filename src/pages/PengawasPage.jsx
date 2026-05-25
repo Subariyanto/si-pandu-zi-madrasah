@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { exportToPDF, exportToExcel } from '../utils/helpers';
+import { supabase } from '../lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
-import { Plus, Edit, Trash2, Search, Download, FileText, X } from 'lucide-react';
+import * as XLSX from 'xlsx';
+import { Plus, Edit, Trash2, Search, Download, FileText, X, Upload, FileSpreadsheet } from 'lucide-react';
 
 export default function PengawasPage() {
   const { pengawas, setPengawas } = useData();
@@ -13,6 +15,8 @@ export default function PengawasPage() {
   const [showForm, setShowForm] = useState(false);
   const [editData, setEditData] = useState(null);
   const [formData, setFormData] = useState(getEmptyForm());
+  const [importMsg, setImportMsg] = useState('');
+  const fileInputRef = useRef(null);
 
   function getEmptyForm() {
     return { nama: '', nip: '', nuptk: '', pangkat: '', jabatan: '', wilayah: '', hp: '', email: '', foto: null, status: 'aktif' };
@@ -45,9 +49,21 @@ export default function PengawasPage() {
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
-    if (confirm('Yakin ingin menghapus data pengawas ini?')) {
-      setPengawas(prev => prev.filter(p => p.id !== id));
+  const handleDelete = async (id) => {
+    if (!confirm('Yakin ingin menghapus data pengawas ini?')) return;
+    // Delete directly from Supabase
+    const { error } = await supabase.from('pengawas').delete().eq('id', id);
+    if (!error) {
+      // Refetch data
+      const { data } = await supabase.from('pengawas').select('*').order('nama');
+      if (data) {
+        setPengawas(() => data.map(p => ({
+          id: p.id, nama: p.nama, nip: p.nip, nuptk: p.nuptk, pangkat: p.pangkat,
+          jabatan: p.jabatan, wilayah: p.wilayah, hp: p.hp, email: p.email, foto: p.foto, status: p.status
+        })));
+      }
+    } else {
+      alert('Gagal menghapus data: ' + error.message);
     }
   };
 
@@ -65,6 +81,67 @@ export default function PengawasPage() {
     exportToPDF('DATA PENGAWAS MADRASAH', headers, data, 'data-pengawas.pdf');
   };
 
+  const handleDownloadTemplate = () => {
+    const template = [
+      { Nama: 'Contoh: Ahmad Fauzi, S.Pd.I', NIP: '197501152003121004', NUPTK: '1234567890123456', Pangkat: 'Pembina / IV-a', Jabatan: 'Pengawas Madrasah Muda', Wilayah: 'Kecamatan Banjar', HP: '081234567890', Email: 'email@kemenag.go.id', Status: 'aktif' }
+    ];
+    exportToExcel(template, 'Template Pengawas', 'template-data-pengawas.xlsx');
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImportMsg('');
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const wb = XLSX.read(evt.target.result, { type: 'binary' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(ws);
+
+        if (jsonData.length === 0) {
+          setImportMsg('❌ File kosong atau format tidak sesuai');
+          return;
+        }
+
+        let imported = 0;
+        for (const row of jsonData) {
+          const item = {
+            nama: row.Nama || row.nama || '',
+            nip: String(row.NIP || row.nip || ''),
+            nuptk: String(row.NUPTK || row.nuptk || ''),
+            pangkat: row.Pangkat || row.pangkat || '',
+            jabatan: row.Jabatan || row.jabatan || '',
+            wilayah: row.Wilayah || row.wilayah || '',
+            hp: String(row.HP || row.hp || row['No HP'] || ''),
+            email: row.Email || row.email || '',
+            status: row.Status || row.status || 'aktif',
+          };
+          if (item.nama) {
+            await supabase.from('pengawas').insert(item);
+            imported++;
+          }
+        }
+
+        // Refetch
+        const { data } = await supabase.from('pengawas').select('*').order('nama');
+        if (data) {
+          setPengawas(() => data.map(p => ({
+            id: p.id, nama: p.nama, nip: p.nip, nuptk: p.nuptk, pangkat: p.pangkat,
+            jabatan: p.jabatan, wilayah: p.wilayah, hp: p.hp, email: p.email, foto: p.foto, status: p.status
+          })));
+        }
+
+        setImportMsg(`✅ Berhasil import ${imported} data pengawas`);
+      } catch (err) {
+        setImportMsg('❌ Gagal membaca file. Pastikan format Excel (.xlsx) sesuai template.');
+      }
+    };
+    reader.readAsBinaryString(file);
+    e.target.value = '';
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -75,6 +152,17 @@ export default function PengawasPage() {
               <Plus size={16} /> Tambah
             </button>
           )}
+          {hasRole('admin') && (
+            <>
+              <button onClick={() => fileInputRef.current?.click()} className="btn-primary flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
+                <Upload size={16} /> Import
+              </button>
+              <button onClick={handleDownloadTemplate} className="btn-secondary flex items-center gap-2">
+                <FileSpreadsheet size={16} /> Template
+              </button>
+              <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImport} className="hidden" />
+            </>
+          )}
           <button onClick={handleExportExcel} className="btn-gold flex items-center gap-2">
             <Download size={16} /> Excel
           </button>
@@ -83,6 +171,12 @@ export default function PengawasPage() {
           </button>
         </div>
       </div>
+
+      {importMsg && (
+        <div className={`p-3 rounded-lg text-sm font-medium ${importMsg.startsWith('✅') ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+          {importMsg}
+        </div>
+      )}
 
       {/* Filters */}
       <div className="card">
