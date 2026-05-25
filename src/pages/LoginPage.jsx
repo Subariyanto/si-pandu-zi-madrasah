@@ -32,7 +32,7 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg mb-4">
             <ShieldIcon className="w-10 h-10 text-kemenag-green" />
           </div>
-          <h1 className="text-2xl font-bold text-white">SI-PANDU ZI MADRASAH</h1>
+          <h1 className="text-2xl font-bold text-white">SI-PANDU ZI KEMENAG JEMBER</h1>
           <p className="text-green-200 text-sm mt-1">Sistem Pendampingan Terpadu Zona Integritas</p>
           <p className="text-green-100 text-xs mt-1">Kelompok Kerja Pengawas Madrasah</p>
         </div>
