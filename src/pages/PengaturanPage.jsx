@@ -1,14 +1,33 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Save, User } from 'lucide-react';
+import { Save, User, Key } from 'lucide-react';
 
 export default function PengaturanPage() {
-  const { user } = useAuth();
+  const { user, changePassword } = useAuth();
   const [saved, setSaved] = useState(false);
+  const [passwordMsg, setPasswordMsg] = useState('');
+  const [passwordForm, setPasswordForm] = useState({ current: '', new: '', confirm: '' });
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordMsg('');
+
+    if (passwordForm.new !== passwordForm.confirm) {
+      setPasswordMsg('❌ Password baru dan konfirmasi tidak cocok');
+      return;
+    }
+    if (passwordForm.new.length < 6) {
+      setPasswordMsg('❌ Password minimal 6 karakter');
+      return;
+    }
+
+    const result = await changePassword(passwordForm.new);
+    if (result.success) {
+      setPasswordMsg('✅ Password berhasil diubah');
+      setPasswordForm({ current: '', new: '', confirm: '' });
+    } else {
+      setPasswordMsg(`❌ ${result.message}`);
+    }
   };
 
   return (
@@ -27,51 +46,63 @@ export default function PengaturanPage() {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama</label>
-            <input type="text" defaultValue={user?.name} className="input-field" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-            <input type="email" defaultValue={user?.email} className="input-field" disabled />
-            <p className="text-xs text-gray-400 mt-1">Email tidak dapat diubah</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password Baru</label>
-            <input type="password" className="input-field" placeholder="Kosongkan jika tidak ingin mengubah" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Konfirmasi Password</label>
-            <input type="password" className="input-field" placeholder="Ulangi password baru" />
-          </div>
-
-          <button onClick={handleSave} className="btn-primary flex items-center gap-2">
-            <Save size={16} /> Simpan Perubahan
-          </button>
-
-          {saved && (
-            <p className="text-sm text-green-600 font-medium">✓ Perubahan berhasil disimpan</p>
-          )}
-        </div>
-      </div>
-
-      <div className="card max-w-lg">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Informasi Akun</h3>
-        <div className="space-y-2 text-sm">
+        <div className="space-y-2 text-sm border-t pt-4">
           <div className="flex justify-between">
             <span className="text-gray-500">Role</span>
             <span className="text-gray-800 dark:text-white capitalize font-medium">{user?.role === 'ketua' ? 'Ketua Pokjawas' : user?.role}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-500">ID</span>
-            <span className="text-gray-800 dark:text-white font-mono text-xs">{user?.id}</span>
+            <span className="text-gray-800 dark:text-white font-mono text-xs">{user?.id?.substring(0, 8)}...</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-500">Versi Aplikasi</span>
             <span className="text-gray-800 dark:text-white">1.0.0</span>
           </div>
         </div>
+      </div>
+
+      {/* Change Password */}
+      <div className="card max-w-lg">
+        <div className="flex items-center gap-2 mb-4">
+          <Key size={20} className="text-kemenag-green" />
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Ubah Password</h3>
+        </div>
+
+        <form onSubmit={handleChangePassword} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password Baru</label>
+            <input
+              type="password"
+              value={passwordForm.new}
+              onChange={(e) => setPasswordForm({...passwordForm, new: e.target.value})}
+              className="input-field"
+              placeholder="Minimal 6 karakter"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Konfirmasi Password Baru</label>
+            <input
+              type="password"
+              value={passwordForm.confirm}
+              onChange={(e) => setPasswordForm({...passwordForm, confirm: e.target.value})}
+              className="input-field"
+              placeholder="Ulangi password baru"
+              required
+            />
+          </div>
+
+          {passwordMsg && (
+            <p className={`text-sm font-medium ${passwordMsg.startsWith('✅') ? 'text-green-600' : 'text-red-600'}`}>
+              {passwordMsg}
+            </p>
+          )}
+
+          <button type="submit" className="btn-primary flex items-center gap-2">
+            <Save size={16} /> Ubah Password
+          </button>
+        </form>
       </div>
     </div>
   );

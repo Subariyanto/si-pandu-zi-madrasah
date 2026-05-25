@@ -21,30 +21,17 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     setLoading(true);
     try {
-      // Check user in Supabase users table
+      // Check user in Supabase users table with password
       const { data, error } = await supabase
         .from('users')
         .select('*')
         .eq('email', email)
+        .eq('password', password)
         .single();
 
       if (error || !data) {
         setLoading(false);
-        return { success: false, message: 'Email tidak ditemukan' };
-      }
-
-      // Simple password check (in production, use Supabase Auth)
-      // For now we use hardcoded passwords matching the demo
-      const passwords = {
-        'admin@zipokjawas.id': 'admin123',
-        'ketua@zipokjawas.id': 'ketua123',
-        'pengawas@zipokjawas.id': 'pengawas123',
-        'madrasah@zipokjawas.id': 'madrasah123',
-      };
-
-      if (passwords[email] !== password) {
-        setLoading(false);
-        return { success: false, message: 'Password salah' };
+        return { success: false, message: 'Email atau password salah' };
       }
 
       const userData = {
@@ -65,6 +52,21 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const changePassword = async (newPassword) => {
+    if (!user) return { success: false, message: 'Tidak ada user login' };
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ password: newPassword })
+        .eq('id', user.id);
+
+      if (error) return { success: false, message: 'Gagal mengubah password' };
+      return { success: true, message: 'Password berhasil diubah' };
+    } catch (err) {
+      return { success: false, message: 'Terjadi kesalahan' };
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('sipandu_user');
@@ -75,7 +77,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, hasRole, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, hasRole, loading, changePassword }}>
       {children}
     </AuthContext.Provider>
   );
