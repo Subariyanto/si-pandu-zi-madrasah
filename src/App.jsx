@@ -65,7 +65,7 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/si-pandu-zi-madrasah">
       <ThemeProvider>
         <AuthProvider>
           <DataProvider>
