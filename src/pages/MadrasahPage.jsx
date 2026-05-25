@@ -94,7 +94,7 @@ export default function MadrasahPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Data Madrasah</h1>
         <div className="flex flex-wrap gap-2">
-          {hasRole('admin') && (
+          {hasRole('admin', 'pengawas') && (
             <button onClick={() => { setShowForm(true); setEditData(null); setFormData(getEmptyForm()); }} className="btn-primary flex items-center gap-2">
               <Plus size={16} /> Tambah
             </button>
@@ -145,7 +145,7 @@ export default function MadrasahPage() {
               <th className="table-header hidden lg:table-cell">Kecamatan</th>
               <th className="table-header hidden md:table-cell">Pengawas</th>
               <th className="table-header">Status ZI</th>
-              {hasRole('admin') && <th className="table-header">Aksi</th>}
+              {hasRole('admin', 'pengawas') && <th className="table-header">Aksi</th>}
             </tr>
           </thead>
           <tbody>
@@ -160,7 +160,7 @@ export default function MadrasahPage() {
                 <td className="table-cell">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusZIColor(m.statusZI)}`}>{m.statusZI}</span>
                 </td>
-                {hasRole('admin') && (
+                {hasRole('admin', 'pengawas') && (
                   <td className="table-cell">
                     <div className="flex gap-2">
                       <button onClick={() => handleEdit(m)} className="text-blue-600 hover:text-blue-800"><Edit size={16} /></button>
