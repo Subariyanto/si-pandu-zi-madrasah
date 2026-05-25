@@ -49,10 +49,10 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email / Username / NIP</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Username / NIP</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input type="text" value={identifier} onChange={(e) => setIdentifier(e.target.value)} className="input-field pl-10" placeholder="Email, username, atau NIP" required />
+                <input type="text" value={identifier} onChange={(e) => setIdentifier(e.target.value)} className="input-field pl-10" placeholder="Username atau NIP" required />
               </div>
             </div>
 

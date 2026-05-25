@@ -46,28 +46,17 @@ export function AuthProvider({ children }) {
   const login = async (identifier, password) => {
     setLoading(true);
     try {
-      // Try login by email first, then by NIP/username
       let data, error;
       
-      // Check by email
+      // Try by username
       ({ data, error } = await supabase
         .from('users')
         .select('*')
-        .eq('email', identifier)
+        .eq('username', identifier)
         .eq('password', password)
         .single());
 
-      // If not found by email, try by username
-      if (error || !data) {
-        ({ data, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('username', identifier)
-          .eq('password', password)
-          .single());
-      }
-
-      // If not found by username, try by NIP
+      // If not found, try by NIP
       if (error || !data) {
         ({ data, error } = await supabase
           .from('users')
@@ -79,7 +68,7 @@ export function AuthProvider({ children }) {
 
       if (error || !data) {
         setLoading(false);
-        return { success: false, message: 'Email/Username/NIP atau password salah' };
+        return { success: false, message: 'Username/NIP atau password salah' };
       }
 
       const userData = {
@@ -130,7 +119,6 @@ export function AuthProvider({ children }) {
       const { data, error } = await supabase
         .from('users')
         .insert({
-          email: userData.email,
           name: userData.name,
           role: userData.role,
           password: userData.password,
@@ -143,7 +131,7 @@ export function AuthProvider({ children }) {
         .single();
 
       if (error) {
-        if (error.message.includes('duplicate')) return { success: false, message: 'Email/Username sudah terdaftar' };
+        if (error.message.includes('duplicate')) return { success: false, message: 'Username/NIP sudah terdaftar' };
         return { success: false, message: error.message };
       }
       return { success: true, data };

@@ -11,7 +11,7 @@ export default function PengaturanPage() {
   const [users, setUsers] = useState([]);
   const [showUsers, setShowUsers] = useState(false);
   const [showAddUser, setShowAddUser] = useState(false);
-  const [newUser, setNewUser] = useState({ email: '', name: '', role: 'madrasah', password: '', username: '', nip: '', pengawasId: '', madrasahId: '' });
+  const [newUser, setNewUser] = useState({ name: '', role: 'madrasah', password: '', username: '', nip: '', pengawasId: '', madrasahId: '' });
   const [addMsg, setAddMsg] = useState('');
   const [resetMsg, setResetMsg] = useState('');
 
@@ -51,7 +51,7 @@ export default function PengaturanPage() {
     const result = await addUser(newUser);
     if (result.success) {
       setAddMsg('✅ User berhasil ditambahkan');
-      setNewUser({ email: '', name: '', role: 'madrasah', password: '', username: '', nip: '', pengawasId: '', madrasahId: '' });
+      setNewUser({ name: '', role: 'madrasah', password: '', username: '', nip: '', pengawasId: '', madrasahId: '' });
       loadUsers();
     } else {
       setAddMsg('❌ ' + result.message);
@@ -188,16 +188,12 @@ export default function PengaturanPage() {
                     <input type="text" value={newUser.name} onChange={(e) => setNewUser({...newUser, name: e.target.value})} className="input-field" required />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                    <input type="text" value={newUser.email} onChange={(e) => setNewUser({...newUser, email: e.target.value})} className="input-field" placeholder="Opsional" />
-                  </div>
-                  <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
-                    <input type="text" value={newUser.username} onChange={(e) => setNewUser({...newUser, username: e.target.value})} className="input-field" placeholder="Untuk login (opsional)" />
+                    <input type="text" value={newUser.username} onChange={(e) => setNewUser({...newUser, username: e.target.value})} className="input-field" placeholder="Untuk login (wajib salah satu)" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">NIP</label>
-                    <input type="text" value={newUser.nip} onChange={(e) => setNewUser({...newUser, nip: e.target.value})} className="input-field" placeholder="Untuk login (opsional)" />
+                    <input type="text" value={newUser.nip} onChange={(e) => setNewUser({...newUser, nip: e.target.value})} className="input-field" placeholder="Untuk login (wajib salah satu)" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
