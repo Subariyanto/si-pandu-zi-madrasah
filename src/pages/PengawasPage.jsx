@@ -50,11 +50,23 @@ export default function PengawasPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Yakin ingin menghapus data pengawas ini?')) return;
-    // Delete directly from Supabase
+    // Check if pengawas has madrasah binaan
+    const { data: relatedMadrasah } = await supabase.from('madrasah').select('nama').eq('pengawas_id', id);
+    
+    if (relatedMadrasah && relatedMadrasah.length > 0) {
+      const names = relatedMadrasah.map(m => m.nama).join(', ');
+      const forceDelete = confirm(
+        `Pengawas ini masih memiliki ${relatedMadrasah.length} madrasah binaan:\n${names}\n\nJika dihapus, relasi ke madrasah tersebut akan dilepas.\n\nLanjutkan hapus?`
+      );
+      if (!forceDelete) return;
+      // Remove relation from madrasah
+      await supabase.from('madrasah').update({ pengawas_id: null, pengawas_nama: '' }).eq('pengawas_id', id);
+    } else {
+      if (!confirm('Yakin ingin menghapus data pengawas ini?')) return;
+    }
+
     const { error } = await supabase.from('pengawas').delete().eq('id', id);
     if (!error) {
-      // Refetch data
       const { data } = await supabase.from('pengawas').select('*').order('nama');
       if (data) {
         setPengawas(() => data.map(p => ({
