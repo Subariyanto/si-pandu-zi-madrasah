@@ -5,7 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import {
   LayoutDashboard, Users, School, ClipboardCheck, Upload, FileCheck,
   Stethoscope, MessageSquare, AlertTriangle, FileText, BarChart3,
-  Printer, Settings, LogOut, Menu, X, Sun, Moon, Shield
+  Printer, Settings, LogOut, Menu, X, Sun, Moon, Shield, BookOpen
 } from 'lucide-react';
 
 const menuItems = [
@@ -23,6 +23,7 @@ const menuItems = [
   { path: '/rekapitulasi', label: 'Rekapitulasi Capaian', icon: BarChart3, roles: ['admin', 'ketua', 'pengawas'] },
   { path: '/cetak-export', label: 'Cetak / Export', icon: Printer, roles: ['admin', 'ketua', 'pengawas'] },
   { path: '/pengaturan', label: 'Pengaturan Akun', icon: Settings, roles: ['admin', 'ketua', 'pengawas', 'madrasah'] },
+  { path: '/panduan', label: 'Panduan Penggunaan', icon: BookOpen, roles: ['admin', 'ketua', 'pengawas', 'madrasah'] },
 ];
 
 export default function Layout({ children }) {

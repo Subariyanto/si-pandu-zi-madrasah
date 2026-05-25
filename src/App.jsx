@@ -19,6 +19,7 @@ import LaporanTriwulanPage from './pages/LaporanTriwulanPage';
 import RekapitulasiPage from './pages/RekapitulasiPage';
 import CetakExportPage from './pages/CetakExportPage';
 import PengaturanPage from './pages/PengaturanPage';
+import PanduanPage from './pages/PanduanPage';
 import PublikSurveiPage from './pages/PublikSurveiPage';
 import PublikPengaduanPage from './pages/PublikPengaduanPage';
 
@@ -55,6 +56,7 @@ function AppRoutes() {
       <Route path="/rekapitulasi" element={<ProtectedRoute><RekapitulasiPage /></ProtectedRoute>} />
       <Route path="/cetak-export" element={<ProtectedRoute><CetakExportPage /></ProtectedRoute>} />
       <Route path="/pengaturan" element={<ProtectedRoute><PengaturanPage /></ProtectedRoute>} />
+      <Route path="/panduan" element={<ProtectedRoute><PanduanPage /></ProtectedRoute>} />
 
       {/* Default redirect */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
