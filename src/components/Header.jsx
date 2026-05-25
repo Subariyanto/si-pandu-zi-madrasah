@@ -33,6 +33,7 @@ export default function Header({ onMenuClick }) {
         <div className="hidden md:block">
           <h1 className="text-lg font-bold text-primary-800 dark:text-primary-400">SI-PANDU ZI MADRASAH</h1>
           <p className="text-xs text-gray-500 dark:text-gray-400">Sistem Pendampingan Terpadu Zona Integritas</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500">Kelompok Kerja Pengawas Madrasah Kab. Jember</p>
         </div>
       </div>
 

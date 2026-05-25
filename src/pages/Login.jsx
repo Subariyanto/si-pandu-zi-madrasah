@@ -32,8 +32,8 @@ export default function Login() {
               <Shield className="w-8 h-8 text-primary-800 dark:text-primary-400" />
             </div>
             <h1 className="text-2xl font-bold text-primary-800 dark:text-white">SI-PANDU ZI</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Sistem Pendampingan Terpadu Zona Integritas Madrasah</p>
-            <p className="text-xs text-accent-600 font-medium mt-1">Kelompok Kerja Pengawas Madrasah</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Sistem Pendampingan Terpadu Zona Integritas</p>
+            <p className="text-xs text-accent-600 font-medium mt-1">Kelompok Kerja Pengawas Madrasah Kab. Jember</p>
           </div>
 
           {/* Form */}
