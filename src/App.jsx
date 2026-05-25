@@ -4,6 +4,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { DataProvider } from './context/DataContext';
 import Layout from './components/Layout';
 import LoginPage from './pages/LoginPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import DashboardPage from './pages/DashboardPage';
 import PengawasPage from './pages/PengawasPage';
 import MadrasahPage from './pages/MadrasahPage';
@@ -22,7 +23,8 @@ import PublikSurveiPage from './pages/PublikSurveiPage';
 import PublikPengaduanPage from './pages/PublikPengaduanPage';
 
 function ProtectedRoute({ children }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  if (loading) return <div className="min-h-screen bg-green-50 dark:bg-gray-900 flex items-center justify-center"><div className="text-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-kemenag-green mx-auto"></div><p className="mt-4 text-gray-600 dark:text-gray-400">Memuat...</p></div></div>;
   if (!user) return <Navigate to="/login" replace />;
   return <Layout>{children}</Layout>;
 }
@@ -34,6 +36,7 @@ function AppRoutes() {
     <Routes>
       {/* Public routes */}
       <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/publik/survei" element={<PublikSurveiPage />} />
       <Route path="/publik/pengaduan" element={<PublikPengaduanPage />} />
 
