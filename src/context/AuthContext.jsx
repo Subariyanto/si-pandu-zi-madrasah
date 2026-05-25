@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { defaultUsers } from '../data/sampleData';
+import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext(null);
 
@@ -8,6 +8,7 @@ export function AuthProvider({ children }) {
     const saved = localStorage.getItem('sipandu_user');
     return saved ? JSON.parse(saved) : null;
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -17,15 +18,51 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
-  const login = (email, password) => {
-    const users = JSON.parse(localStorage.getItem('sipandu_users')) || defaultUsers;
-    const found = users.find(u => u.email === email && u.password === password);
-    if (found) {
-      const { password: _, ...userWithoutPassword } = found;
-      setUser(userWithoutPassword);
-      return { success: true, user: userWithoutPassword };
+  const login = async (email, password) => {
+    setLoading(true);
+    try {
+      // Check user in Supabase users table
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .single();
+
+      if (error || !data) {
+        setLoading(false);
+        return { success: false, message: 'Email tidak ditemukan' };
+      }
+
+      // Simple password check (in production, use Supabase Auth)
+      // For now we use hardcoded passwords matching the demo
+      const passwords = {
+        'admin@zipokjawas.id': 'admin123',
+        'ketua@zipokjawas.id': 'ketua123',
+        'pengawas@zipokjawas.id': 'pengawas123',
+        'madrasah@zipokjawas.id': 'madrasah123',
+      };
+
+      if (passwords[email] !== password) {
+        setLoading(false);
+        return { success: false, message: 'Password salah' };
+      }
+
+      const userData = {
+        id: data.id,
+        email: data.email,
+        name: data.name,
+        role: data.role,
+        pengawasId: data.pengawas_id,
+        madrasahId: data.madrasah_id,
+      };
+
+      setUser(userData);
+      setLoading(false);
+      return { success: true, user: userData };
+    } catch (err) {
+      setLoading(false);
+      return { success: false, message: 'Terjadi kesalahan koneksi' };
     }
-    return { success: false, message: 'Email atau password salah' };
   };
 
   const logout = () => {
@@ -38,7 +75,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, hasRole }}>
+    <AuthContext.Provider value={{ user, login, logout, hasRole, loading }}>
       {children}
     </AuthContext.Provider>
   );
