@@ -74,31 +74,8 @@ export default function LoginPage() {
 
           <p className="text-xs text-gray-400 text-center mt-4">Auto-logout setelah 30 menit tidak aktif</p>
 
-          {/* Demo accounts */}
           <div className="mt-6 pt-4 border-t border-gray-200">
-            <p className="text-xs text-gray-500 text-center mb-2">Akun Demo:</p>
-            <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
-              <div className="bg-gray-50 p-2 rounded">
-                <p className="font-medium">Admin</p>
-                <p>admin@zipokjawas.id</p>
-                <p>admin123</p>
-              </div>
-              <div className="bg-gray-50 p-2 rounded">
-                <p className="font-medium">Ketua</p>
-                <p>ketua@zipokjawas.id</p>
-                <p>ketua123</p>
-              </div>
-              <div className="bg-gray-50 p-2 rounded">
-                <p className="font-medium">Pengawas</p>
-                <p>pengawas@zipokjawas.id</p>
-                <p>pengawas123</p>
-              </div>
-              <div className="bg-gray-50 p-2 rounded">
-                <p className="font-medium">Madrasah</p>
-                <p>madrasah@zipokjawas.id</p>
-                <p>madrasah123</p>
-              </div>
-            </div>
+            <p className="text-xs text-gray-500 text-center">Hubungi Admin jika belum memiliki akun</p>
           </div>
         </div>
       </div>
