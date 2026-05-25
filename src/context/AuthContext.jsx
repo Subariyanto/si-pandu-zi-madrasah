@@ -66,6 +66,16 @@ export function AuthProvider({ children }) {
           .single());
       }
 
+      // Fallback: try by email (for legacy accounts)
+      if (error || !data) {
+        ({ data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('email', identifier)
+          .eq('password', password)
+          .single());
+      }
+
       if (error || !data) {
         setLoading(false);
         return { success: false, message: 'Username/NIP atau password salah' };
