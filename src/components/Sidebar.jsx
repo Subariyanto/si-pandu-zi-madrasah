@@ -56,7 +56,8 @@ export default function Sidebar({ open, onClose }) {
             <Shield className="w-8 h-8 text-accent-400" />
             <div>
               <h2 className="font-bold text-sm">SI-PANDU ZI</h2>
-              <p className="text-xs text-primary-200 dark:text-gray-400">Pokjawas Madrasah</p>
+              <p className="text-xs text-primary-200 dark:text-gray-400">Sistem Pendampingan Terpadu Zona Integritas</p>
+              <p className="text-xs text-primary-300 dark:text-gray-500">Kelompok Kerja Pengawas Madrasah Kab. Jember</p>
             </div>
           </div>
           <button onClick={onClose} className="md:hidden p-1 hover:bg-primary-700 rounded" aria-label="Close menu">
