@@ -57,8 +57,8 @@ export default function Layout({ children }) {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-lg font-bold text-kemenag-gold">SI-PANDU ZI</h1>
-              <p className="text-[10px] text-green-200">Sistem Pendampingan Pengawas Madrasah</p>
-              <p className="text-[10px] text-green-300">untuk Zona Integritas Madrasah</p>
+              <p className="text-[10px] text-green-200">Sistem Pendampingan Terpadu Zona Integritas</p>
+              <p className="text-[10px] text-green-300">Kelompok Kerja Pengawas Kab. Jember</p>
             </div>
             <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-white">
               <X size={20} />
