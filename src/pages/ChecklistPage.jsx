@@ -2,38 +2,44 @@ import { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { ziAreas } from '../data/sampleData';
+import { OPSI_PER_INDIKATOR } from '../data/opsiChecklist';
 import { hitungCapaianMadrasah, getKategoriCapaian } from '../utils/helpers';
 import { Save, ChevronDown, ChevronUp } from 'lucide-react';
 
-const OPSI_CATATAN = [
+const OPSI_CATATAN_DEFAULT = [
   'Dokumen sudah lengkap dan sesuai standar',
   'Dokumen ada tetapi belum diperbarui sesuai tahun berjalan',
   'Belum ada bukti fisik, perlu segera dilengkapi',
   'Implementasi sudah berjalan namun belum terdokumentasi',
-  'Perlu peningkatan sosialisasi ke seluruh stakeholder',
   'Sudah baik, pertahankan dan tingkatkan kualitasnya',
-  'Pelaksanaan belum konsisten, perlu monitoring berkala',
 ];
 
-const OPSI_KETERANGAN = [
+const OPSI_KETERANGAN_DEFAULT = [
   'Dokumen tersedia di lemari arsip madrasah',
   'Sudah diunggah di website/media sosial madrasah',
   'Masih dalam proses penyusunan oleh tim',
   'Terdokumentasi dalam notulen rapat',
-  'Tersedia dalam bentuk SK/Surat Keputusan',
-  'Bukti kegiatan berupa foto dan laporan',
   'Belum tersedia, dijadwalkan minggu depan',
 ];
 
-const OPSI_REKOMENDASI = [
+const OPSI_REKOMENDASI_DEFAULT = [
   'Segera lengkapi dokumen bukti dukung sesuai indikator',
   'Lakukan sosialisasi ulang kepada seluruh warga madrasah',
   'Buat tim khusus untuk menyiapkan eviden yang belum ada',
   'Dokumentasikan seluruh kegiatan yang sudah berjalan',
   'Lakukan evaluasi internal dan perbaikan dalam 2 minggu',
-  'Ajukan permohonan bantuan teknis ke Pokjawas',
-  'Susun rencana aksi perbaikan dengan target waktu jelas',
 ];
+
+function getOpsi(areaKey, idx, field) {
+  const areaOpsi = OPSI_PER_INDIKATOR[areaKey];
+  if (areaOpsi && areaOpsi[idx] && areaOpsi[idx][field]) {
+    return areaOpsi[idx][field];
+  }
+  // fallback
+  if (field === 'keterangan') return OPSI_KETERANGAN_DEFAULT;
+  if (field === 'catatan') return OPSI_CATATAN_DEFAULT;
+  return OPSI_REKOMENDASI_DEFAULT;
+}
 
 export default function ChecklistPage() {
   const { checklist, setChecklist, madrasah } = useData();
@@ -187,7 +193,7 @@ export default function ChecklistPage() {
                                 value=""
                               >
                                 <option value="">-- Pilih contoh keterangan --</option>
-                                {OPSI_KETERANGAN.map((o, i) => <option key={i} value={o}>{o}</option>)}
+                                {getOpsi(areaKey, idx, 'keterangan').map((o, i) => <option key={i} value={o}>{o}</option>)}
                               </select>
                               <input
                                 type="text"
@@ -211,7 +217,7 @@ export default function ChecklistPage() {
                                 value=""
                               >
                                 <option value="">-- Pilih contoh catatan --</option>
-                                {OPSI_CATATAN.map((o, i) => <option key={i} value={o}>{o}</option>)}
+                                {getOpsi(areaKey, idx, 'catatan').map((o, i) => <option key={i} value={o}>{o}</option>)}
                               </select>
                               <input
                                 type="text"
@@ -229,7 +235,7 @@ export default function ChecklistPage() {
                                 value=""
                               >
                                 <option value="">-- Pilih contoh rekomendasi --</option>
-                                {OPSI_REKOMENDASI.map((o, i) => <option key={i} value={o}>{o}</option>)}
+                                {getOpsi(areaKey, idx, 'rekomendasi').map((o, i) => <option key={i} value={o}>{o}</option>)}
                               </select>
                               <input
                                 type="text"
