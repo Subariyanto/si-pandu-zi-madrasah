@@ -197,7 +197,14 @@ export function AuthProvider({ children }) {
   };
 
   const hasRole = (...roles) => {
-    return user && roles.includes(user.role);
+    if (!user || !user.role) return false;
+    const userRole = user.role.toLowerCase();
+    return roles.some(r => {
+      const check = r.toLowerCase();
+      // 'admin' matches 'admin', 'administrator', etc.
+      if (check === 'admin') return userRole === 'admin' || userRole === 'administrator';
+      return userRole === check;
+    });
   };
 
   return (
