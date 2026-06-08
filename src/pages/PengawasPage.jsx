@@ -211,32 +211,24 @@ export default function PengawasPage() {
       </div>
 
       {/* Table */}
-      <div className="card overflow-x-auto">
-        <table className="w-full">
+      <div className="card overflow-x-auto" style={{ overflowX: 'scroll' }}>
+        <table className="w-full min-w-[700px]">
           <thead>
             <tr>
-              <th className="table-header w-10">No</th>
-              {hasRole('admin') && <th className="table-header w-20 sticky right-0 bg-white dark:bg-gray-800 z-10">Aksi</th>}
+              <th className="table-header">No</th>
               <th className="table-header">Nama</th>
               <th className="table-header hidden md:table-cell">NIP</th>
               <th className="table-header hidden lg:table-cell">Pangkat</th>
               <th className="table-header">Wilayah</th>
               <th className="table-header hidden md:table-cell">HP</th>
               <th className="table-header">Status</th>
+              {hasRole('admin') && <th className="table-header">Aksi</th>}
             </tr>
           </thead>
           <tbody>
             {filtered.map((p, idx) => (
               <tr key={p.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                <td className="table-cell w-10">{idx + 1}</td>
-                {hasRole('admin') && (
-                  <td className="table-cell w-20 sticky right-0 bg-white dark:bg-gray-800 z-10">
-                    <div className="flex gap-2">
-                      <button onClick={() => handleEdit(p)} className="text-blue-600 hover:text-blue-800" title="Edit"><Edit size={16} /></button>
-                      <button onClick={() => handleDelete(p.id)} className="text-red-600 hover:text-red-800" title="Hapus"><Trash2 size={16} /></button>
-                    </div>
-                  </td>
-                )}
+                <td className="table-cell">{idx + 1}</td>
                 <td className="table-cell font-medium">{p.nama}</td>
                 <td className="table-cell hidden md:table-cell">{p.nip}</td>
                 <td className="table-cell hidden lg:table-cell">{p.pangkat}</td>
@@ -247,6 +239,14 @@ export default function PengawasPage() {
                     {p.status}
                   </span>
                 </td>
+                {hasRole('admin') && (
+                  <td className="table-cell">
+                    <div className="flex gap-2">
+                      <button onClick={() => handleEdit(p)} className="text-blue-600 hover:text-blue-800" title="Edit"><Edit size={16} /></button>
+                      <button onClick={() => handleDelete(p.id)} className="text-red-600 hover:text-red-800" title="Hapus"><Trash2 size={16} /></button>
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
             {filtered.length === 0 && (

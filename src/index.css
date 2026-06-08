@@ -34,3 +34,25 @@
     @apply px-4 py-3 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-gray-700;
   }
 }
+
+/* Scrollbar selalu terlihat */
+.overflow-x-auto,
+[style*="overflow-x: scroll"] {
+  scrollbar-width: thin;
+  scrollbar-color: #9ca3af transparent;
+}
+.overflow-x-auto::-webkit-scrollbar,
+[style*="overflow-x: scroll"]::-webkit-scrollbar {
+  height: 10px;
+  display: block !important;
+}
+.overflow-x-auto::-webkit-scrollbar-thumb,
+[style*="overflow-x: scroll"]::-webkit-scrollbar-thumb {
+  background-color: #9ca3af;
+  border-radius: 5px;
+}
+.overflow-x-auto::-webkit-scrollbar-track,
+[style*="overflow-x: scroll"]::-webkit-scrollbar-track {
+  background-color: #f3f4f6;
+  border-radius: 5px;
+}
