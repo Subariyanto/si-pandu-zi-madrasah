@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { DataProvider } from './context/DataContext';
@@ -67,7 +67,7 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter basename="/si-pandu-zi-madrasah">
+    <HashRouter>
       <ThemeProvider>
         <AuthProvider>
           <DataProvider>
@@ -75,6 +75,6 @@ export default function App() {
           </DataProvider>
         </AuthProvider>
       </ThemeProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
