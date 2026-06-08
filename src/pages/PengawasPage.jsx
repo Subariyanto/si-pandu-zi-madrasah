@@ -5,7 +5,7 @@ import { exportToPDF, exportToExcel } from '../utils/helpers';
 import { supabase } from '../lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import * as XLSX from 'xlsx';
-import { Plus, Edit, Trash2, Search, Download, FileText, X, Upload, FileSpreadsheet } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Download, FileText, X, Upload, FileSpreadsheet, Eye } from 'lucide-react';
 
 export default function PengawasPage() {
   const { pengawas, setPengawas } = useData();
@@ -16,6 +16,7 @@ export default function PengawasPage() {
   const [editData, setEditData] = useState(null);
   const [formData, setFormData] = useState(getEmptyForm());
   const [importMsg, setImportMsg] = useState('');
+  const [detailData, setDetailData] = useState(null);
   const fileInputRef = useRef(null);
 
   function getEmptyForm() {
@@ -242,6 +243,7 @@ export default function PengawasPage() {
                 {hasRole('admin') && (
                   <td className="table-cell">
                     <div className="flex gap-2">
+                      <button onClick={() => setDetailData(p)} className="text-green-600 hover:text-green-800" title="Lihat Detail"><Eye size={16} /></button>
                       <button onClick={() => handleEdit(p)} className="text-blue-600 hover:text-blue-800" title="Edit"><Edit size={16} /></button>
                       <button onClick={() => handleDelete(p.id)} className="text-red-600 hover:text-red-800" title="Hapus"><Trash2 size={16} /></button>
                     </div>
@@ -255,6 +257,41 @@ export default function PengawasPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Modal Detail */}
+      {detailData && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Detail Pengawas</h3>
+              <button onClick={() => setDetailData(null)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+            </div>
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 gap-3">
+                <div><span className="text-sm text-gray-500 dark:text-gray-400">Nama Lengkap</span><p className="font-medium text-gray-800 dark:text-white">{detailData.nama || '-'}</p></div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">NIP</span><p className="font-medium text-gray-800 dark:text-white">{detailData.nip || '-'}</p></div>
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">NUPTK</span><p className="font-medium text-gray-800 dark:text-white">{detailData.nuptk || '-'}</p></div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Pangkat/Golongan</span><p className="font-medium text-gray-800 dark:text-white">{detailData.pangkat || '-'}</p></div>
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Jabatan</span><p className="font-medium text-gray-800 dark:text-white">{detailData.jabatan || '-'}</p></div>
+                </div>
+                <div><span className="text-sm text-gray-500 dark:text-gray-400">Wilayah Binaan</span><p className="font-medium text-gray-800 dark:text-white">{detailData.wilayah || '-'}</p></div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">No. HP</span><p className="font-medium text-gray-800 dark:text-white">{detailData.hp || '-'}</p></div>
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Email</span><p className="font-medium text-gray-800 dark:text-white">{detailData.email || '-'}</p></div>
+                </div>
+                <div><span className="text-sm text-gray-500 dark:text-gray-400">Status</span><p className="font-medium text-gray-800 dark:text-white">{detailData.status || '-'}</p></div>
+              </div>
+            </div>
+            <div className="flex gap-3 pt-4">
+              <button onClick={() => { setDetailData(null); handleEdit(detailData); }} className="btn-primary flex-1 flex items-center justify-center gap-2"><Edit size={16} /> Edit</button>
+              <button onClick={() => setDetailData(null)} className="btn-secondary flex-1">Tutup</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal Form */}
       {showForm && (

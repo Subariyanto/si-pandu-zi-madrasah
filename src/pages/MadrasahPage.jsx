@@ -3,7 +3,7 @@ import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { exportToPDF, exportToExcel } from '../utils/helpers';
 import { v4 as uuidv4 } from 'uuid';
-import { Plus, Edit, Trash2, Search, Download, FileText, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Download, FileText, X, Eye } from 'lucide-react';
 
 export default function MadrasahPage() {
   const { madrasah, setMadrasah, pengawas } = useData();
@@ -15,6 +15,7 @@ export default function MadrasahPage() {
   const [showForm, setShowForm] = useState(false);
   const [editData, setEditData] = useState(null);
   const [formData, setFormData] = useState(getEmptyForm());
+  const [detailData, setDetailData] = useState(null);
 
   function getEmptyForm() {
     return { nama: '', nsm: '', npsn: '', jenjang: 'MI', statusMadrasah: 'Swasta', kepalaMadrasah: '', hpKepala: '', email: '', alamat: '', kecamatan: '', pengawasId: '', pengawasNama: '', jumlahGuru: 0, jumlahSiswa: 0, statusZI: 'Belum Mulai' };
@@ -163,8 +164,9 @@ export default function MadrasahPage() {
                 {hasRole('admin', 'pengawas') && (
                   <td className="table-cell">
                     <div className="flex gap-2">
-                      <button onClick={() => handleEdit(m)} className="text-blue-600 hover:text-blue-800"><Edit size={16} /></button>
-                      <button onClick={() => handleDelete(m.id)} className="text-red-600 hover:text-red-800"><Trash2 size={16} /></button>
+                      <button onClick={() => setDetailData(m)} className="text-green-600 hover:text-green-800" title="Lihat Detail"><Eye size={16} /></button>
+                      <button onClick={() => handleEdit(m)} className="text-blue-600 hover:text-blue-800" title="Edit"><Edit size={16} /></button>
+                      <button onClick={() => handleDelete(m.id)} className="text-red-600 hover:text-red-800" title="Hapus"><Trash2 size={16} /></button>
                     </div>
                   </td>
                 )}
@@ -176,6 +178,50 @@ export default function MadrasahPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Modal Detail */}
+      {detailData && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Detail Madrasah</h3>
+              <button onClick={() => setDetailData(null)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+            </div>
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 gap-3">
+                <div><span className="text-sm text-gray-500 dark:text-gray-400">Nama Madrasah</span><p className="font-medium text-gray-800 dark:text-white">{detailData.nama || '-'}</p></div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">NSM</span><p className="font-medium text-gray-800 dark:text-white">{detailData.nsm || '-'}</p></div>
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">NPSN</span><p className="font-medium text-gray-800 dark:text-white">{detailData.npsn || '-'}</p></div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Jenjang</span><p className="font-medium text-gray-800 dark:text-white">{detailData.jenjang || '-'}</p></div>
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Status Madrasah</span><p className="font-medium text-gray-800 dark:text-white">{detailData.statusMadrasah || '-'}</p></div>
+                </div>
+                <div><span className="text-sm text-gray-500 dark:text-gray-400">Kepala Madrasah</span><p className="font-medium text-gray-800 dark:text-white">{detailData.kepalaMadrasah || '-'}</p></div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">HP Kepala</span><p className="font-medium text-gray-800 dark:text-white">{detailData.hpKepala || '-'}</p></div>
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Email</span><p className="font-medium text-gray-800 dark:text-white">{detailData.email || '-'}</p></div>
+                </div>
+                <div><span className="text-sm text-gray-500 dark:text-gray-400">Alamat</span><p className="font-medium text-gray-800 dark:text-white">{detailData.alamat || '-'}</p></div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Kecamatan</span><p className="font-medium text-gray-800 dark:text-white">{detailData.kecamatan || '-'}</p></div>
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Pengawas Pembina</span><p className="font-medium text-gray-800 dark:text-white">{detailData.pengawasNama || '-'}</p></div>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Jumlah Guru</span><p className="font-medium text-gray-800 dark:text-white">{detailData.jumlahGuru || 0}</p></div>
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Jumlah Siswa</span><p className="font-medium text-gray-800 dark:text-white">{detailData.jumlahSiswa || 0}</p></div>
+                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Status ZI</span><p className="font-medium text-gray-800 dark:text-white">{detailData.statusZI || '-'}</p></div>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3 pt-4">
+              <button onClick={() => { setDetailData(null); handleEdit(detailData); }} className="btn-primary flex-1 flex items-center justify-center gap-2"><Edit size={16} /> Edit</button>
+              <button onClick={() => setDetailData(null)} className="btn-secondary flex-1">Tutup</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal Form */}
       {showForm && (
