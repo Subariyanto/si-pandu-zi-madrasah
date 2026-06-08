@@ -20,6 +20,7 @@ import RekapitulasiPage from './pages/RekapitulasiPage';
 import CetakExportPage from './pages/CetakExportPage';
 import PengaturanPage from './pages/PengaturanPage';
 import PanduanPage from './pages/PanduanPage';
+import DownloadFormatPage from './pages/DownloadFormatPage';
 import PublikSurveiPage from './pages/PublikSurveiPage';
 import PublikPengaduanPage from './pages/PublikPengaduanPage';
 
@@ -48,6 +49,7 @@ function AppRoutes() {
       <Route path="/pendampingan" element={<ProtectedRoute><PendampinganPage /></ProtectedRoute>} />
       <Route path="/checklist" element={<ProtectedRoute><ChecklistPage /></ProtectedRoute>} />
       <Route path="/upload-eviden" element={<ProtectedRoute><UploadEvidenPage /></ProtectedRoute>} />
+      <Route path="/download-format" element={<ProtectedRoute><DownloadFormatPage /></ProtectedRoute>} />
       <Route path="/kartu-kendali" element={<ProtectedRoute><KartuKendaliPage /></ProtectedRoute>} />
       <Route path="/klinik-zi" element={<ProtectedRoute><KlinikZIPage /></ProtectedRoute>} />
       <Route path="/survei" element={<ProtectedRoute><SurveiPage /></ProtectedRoute>} />

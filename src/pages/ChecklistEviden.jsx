@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useData } from '../context/DataContext'
 import { areaZI } from '../data/sampleData'
-import { FileCheck, Save, X } from 'lucide-react'
+import { OPSI_PER_INDIKATOR } from '../data/opsiChecklist'
+import { FileCheck, Save, X, Wand2 } from 'lucide-react'
 
 export default function ChecklistEviden() {
   const { checklistEviden, madrasah, pengawas, addChecklistEviden, updateChecklistEviden } = useData()
@@ -139,6 +140,23 @@ export default function ChecklistEviden() {
             <div className="sticky top-0 bg-white dark:bg-gray-800 flex items-center justify-between p-4 border-b dark:border-gray-700 z-10">
               <h2 className="text-lg font-bold text-primary-800 dark:text-white">Checklist Eviden ZI</h2>
               <div className="flex gap-2">
+                <button onClick={() => {
+                  const updated = { ...currentChecklist }
+                  updated.areas.forEach((area, areaIdx) => {
+                    const areaKey = `area${area.area}`
+                    const opsiArea = OPSI_PER_INDIKATOR[areaKey]
+                    if (!opsiArea) return
+                    area.indikators.forEach((ind, indIdx) => {
+                      if (!opsiArea[indIdx]) return
+                      const statusIndex = ind.status === 'Ada' ? 0 : ind.status === 'Dalam Proses' ? 1 : 3
+                      const opsi = opsiArea[indIdx]
+                      ind.keterangan = opsi.keterangan[statusIndex] || ''
+                      ind.catatan = opsi.catatan[statusIndex] || ''
+                      ind.rekomendasi = opsi.rekomendasi[statusIndex] || ''
+                    })
+                  })
+                  setCurrentChecklist({ ...updated })
+                }} className="btn-primary flex items-center gap-2 bg-purple-600 hover:bg-purple-700"><Wand2 className="w-4 h-4" /> Generate Otomatis</button>
                 <button onClick={handleSave} className="btn-primary flex items-center gap-2"><Save className="w-4 h-4" /> Simpan</button>
                 <button onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"><X className="w-5 h-5" /></button>
               </div>

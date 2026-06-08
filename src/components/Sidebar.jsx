@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
-  LayoutDashboard, Users, School, ClipboardCheck, FileCheck, Upload,
+  LayoutDashboard, Users, School, ClipboardCheck, FileCheck, Upload, Download,
   CreditCard, Stethoscope, Star, MessageSquareWarning, FileText,
   BarChart3, Printer, Settings, LogOut, X, Shield
 } from 'lucide-react'
@@ -13,6 +13,7 @@ const menuItems = [
   { path: '/pendampingan', label: 'Pendampingan ZI', icon: ClipboardCheck },
   { path: '/checklist-eviden', label: 'Checklist Eviden ZI', icon: FileCheck },
   { path: '/upload-eviden', label: 'Upload Eviden', icon: Upload },
+  { path: '/download-format', label: 'Download Format Dokumen', icon: Download },
   { path: '/kartu-kendali', label: 'Kartu Kendali Integritas', icon: CreditCard },
   { path: '/klinik-zi', label: 'Klinik ZI', icon: Stethoscope },
   { path: '/survei-kepuasan', label: 'Survei Kepuasan', icon: Star },
