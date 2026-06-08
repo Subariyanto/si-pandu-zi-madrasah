@@ -51,7 +51,7 @@ export default function Layout({ children }) {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-kemenag-green text-white transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 flex flex-col`}>
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-kemenag-green text-white transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 overflow-y-auto scrollbar-hide`}>
         {/* Logo */}
         <div className="p-4 border-b border-green-700">
           <div className="flex items-center justify-between">
@@ -73,7 +73,7 @@ export default function Layout({ children }) {
         </div>
 
         {/* Menu */}
-        <nav className="flex-1 overflow-y-auto py-2">
+        <nav className="py-2">
           {filteredMenu.map(item => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
