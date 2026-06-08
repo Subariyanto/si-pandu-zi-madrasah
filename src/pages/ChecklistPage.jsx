@@ -15,6 +15,16 @@ const OPSI_CATATAN = [
   'Pelaksanaan belum konsisten, perlu monitoring berkala',
 ];
 
+const OPSI_KETERANGAN = [
+  'Dokumen tersedia di lemari arsip madrasah',
+  'Sudah diunggah di website/media sosial madrasah',
+  'Masih dalam proses penyusunan oleh tim',
+  'Terdokumentasi dalam notulen rapat',
+  'Tersedia dalam bentuk SK/Surat Keputusan',
+  'Bukti kegiatan berupa foto dan laporan',
+  'Belum tersedia, dijadwalkan minggu depan',
+];
+
 const OPSI_REKOMENDASI = [
   'Segera lengkapi dokumen bukti dukung sesuai indikator',
   'Lakukan sosialisasi ulang kepada seluruh warga madrasah',
@@ -171,12 +181,20 @@ export default function ChecklistPage() {
                             </div>
                             <div>
                               <label className="block text-xs text-gray-500 mb-1">Keterangan</label>
+                              <select
+                                onChange={(e) => { if (e.target.value) handleFieldChange(areaKey, idx, 'keterangan', e.target.value); }}
+                                className="input-field text-sm mb-1"
+                                value=""
+                              >
+                                <option value="">-- Pilih contoh keterangan --</option>
+                                {OPSI_KETERANGAN.map((o, i) => <option key={i} value={o}>{o}</option>)}
+                              </select>
                               <input
                                 type="text"
                                 value={item.keterangan}
                                 onChange={(e) => handleFieldChange(areaKey, idx, 'keterangan', e.target.value)}
                                 className="input-field text-sm"
-                                placeholder="Keterangan..."
+                                placeholder="Pilih di atas atau ketik manual..."
                               />
                             </div>
                             <div>
