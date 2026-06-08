@@ -5,6 +5,26 @@ import { ziAreas } from '../data/sampleData';
 import { hitungCapaianMadrasah, getKategoriCapaian } from '../utils/helpers';
 import { Save, ChevronDown, ChevronUp } from 'lucide-react';
 
+const OPSI_CATATAN = [
+  'Dokumen sudah lengkap dan sesuai standar',
+  'Dokumen ada tetapi belum diperbarui sesuai tahun berjalan',
+  'Belum ada bukti fisik, perlu segera dilengkapi',
+  'Implementasi sudah berjalan namun belum terdokumentasi',
+  'Perlu peningkatan sosialisasi ke seluruh stakeholder',
+  'Sudah baik, pertahankan dan tingkatkan kualitasnya',
+  'Pelaksanaan belum konsisten, perlu monitoring berkala',
+];
+
+const OPSI_REKOMENDASI = [
+  'Segera lengkapi dokumen bukti dukung sesuai indikator',
+  'Lakukan sosialisasi ulang kepada seluruh warga madrasah',
+  'Buat tim khusus untuk menyiapkan eviden yang belum ada',
+  'Dokumentasikan seluruh kegiatan yang sudah berjalan',
+  'Lakukan evaluasi internal dan perbaikan dalam 2 minggu',
+  'Ajukan permohonan bantuan teknis ke Pokjawas',
+  'Susun rencana aksi perbaikan dengan target waktu jelas',
+];
+
 export default function ChecklistPage() {
   const { checklist, setChecklist, madrasah } = useData();
   const { user } = useAuth();
@@ -165,22 +185,38 @@ export default function ChecklistPage() {
                             </div>
                             <div>
                               <label className="block text-xs text-gray-500 mb-1">Catatan Pengawas</label>
+                              <select
+                                onChange={(e) => { if (e.target.value) handleFieldChange(areaKey, idx, 'catatan', e.target.value); }}
+                                className="input-field text-sm mb-1"
+                                value=""
+                              >
+                                <option value="">-- Pilih contoh catatan --</option>
+                                {OPSI_CATATAN.map((o, i) => <option key={i} value={o}>{o}</option>)}
+                              </select>
                               <input
                                 type="text"
                                 value={item.catatan}
                                 onChange={(e) => handleFieldChange(areaKey, idx, 'catatan', e.target.value)}
                                 className="input-field text-sm"
-                                placeholder="Catatan..."
+                                placeholder="Pilih di atas atau ketik manual..."
                               />
                             </div>
                             <div className="md:col-span-2">
                               <label className="block text-xs text-gray-500 mb-1">Rekomendasi Tindak Lanjut</label>
+                              <select
+                                onChange={(e) => { if (e.target.value) handleFieldChange(areaKey, idx, 'rekomendasi', e.target.value); }}
+                                className="input-field text-sm mb-1"
+                                value=""
+                              >
+                                <option value="">-- Pilih contoh rekomendasi --</option>
+                                {OPSI_REKOMENDASI.map((o, i) => <option key={i} value={o}>{o}</option>)}
+                              </select>
                               <input
                                 type="text"
                                 value={item.rekomendasi}
                                 onChange={(e) => handleFieldChange(areaKey, idx, 'rekomendasi', e.target.value)}
                                 className="input-field text-sm"
-                                placeholder="Rekomendasi..."
+                                placeholder="Pilih di atas atau ketik manual..."
                               />
                             </div>
                           </div>
