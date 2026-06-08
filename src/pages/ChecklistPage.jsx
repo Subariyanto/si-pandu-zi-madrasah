@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { ziAreas } from '../data/sampleData';
 import { OPSI_PER_INDIKATOR } from '../data/opsiChecklist';
 import { hitungCapaianMadrasah, getKategoriCapaian } from '../utils/helpers';
-import { Save, ChevronDown, ChevronUp } from 'lucide-react';
+import { Save, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 
 const OPSI_CATATAN_DEFAULT = [
   'Dokumen sudah lengkap dan sesuai standar',
@@ -39,6 +39,48 @@ function getOpsi(areaKey, idx, field) {
   if (field === 'keterangan') return OPSI_KETERANGAN_DEFAULT;
   if (field === 'catatan') return OPSI_CATATAN_DEFAULT;
   return OPSI_REKOMENDASI_DEFAULT;
+}
+
+function generateFromKeterangan(keterangan, areaKey, idx) {
+  const ket = (keterangan || '').toLowerCase();
+  let catatan = '';
+  let rekomendasi = '';
+
+  // Coba match dari opsi per indikator berdasarkan keterangan
+  const areaOpsi = OPSI_PER_INDIKATOR[areaKey];
+  if (areaOpsi && areaOpsi[idx]) {
+    const opsi = areaOpsi[idx];
+    // Cari keterangan yang paling mirip di daftar
+    const ketIdx = opsi.keterangan.findIndex(k => k.toLowerCase() === ket);
+    if (ketIdx !== -1 && ketIdx < opsi.catatan.length) {
+      catatan = opsi.catatan[ketIdx];
+      rekomendasi = opsi.rekomendasi[ketIdx];
+      return { catatan, rekomendasi };
+    }
+  }
+
+  // Fallback: generate berdasarkan kata kunci
+  if (ket.includes('belum') || ket.includes('tidak ada') || ket.includes('tidak tersedia')) {
+    catatan = 'Dokumen/bukti belum tersedia, perlu segera disiapkan';
+    rekomendasi = 'Segera lengkapi dokumen bukti dukung sesuai indikator dalam 2 minggu';
+  } else if (ket.includes('proses') || ket.includes('sedang')) {
+    catatan = 'Sedang dalam proses penyusunan, perlu dipercepat penyelesaiannya';
+    rekomendasi = 'Percepat penyelesaian dan pastikan terdokumentasi dengan baik';
+  } else if (ket.includes('lengkap') || ket.includes('tersedia') || ket.includes('ada')) {
+    catatan = 'Dokumen sudah tersedia dan sesuai standar, pertahankan';
+    rekomendasi = 'Pertahankan dan lakukan pembaruan secara berkala';
+  } else if (ket.includes('lisan') || ket.includes('tanpa')) {
+    catatan = 'Pelaksanaan sudah ada namun belum didukung dokumen resmi';
+    rekomendasi = 'Formalkan dalam bentuk dokumen resmi (SK/Surat) yang ditandatangani';
+  } else if (ket.includes('update') || ket.includes('perbarui') || ket.includes('lama')) {
+    catatan = 'Dokumen ada tetapi perlu diperbarui sesuai tahun berjalan';
+    rekomendasi = 'Lakukan pembaruan dokumen sesuai periode dan regulasi terbaru';
+  } else {
+    catatan = 'Perlu verifikasi lebih lanjut terhadap kelengkapan bukti dukung';
+    rekomendasi = 'Lakukan pengecekan ulang dan lengkapi jika masih ada kekurangan';
+  }
+
+  return { catatan, rekomendasi };
 }
 
 export default function ChecklistPage() {
@@ -208,7 +250,21 @@ export default function ChecklistPage() {
                               <input type="text" value={item.skor} readOnly className="input-field text-sm bg-gray-100" />
                             </div>
                           </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                          <div className="flex items-center mt-3 mb-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const result = generateFromKeterangan(item.keterangan, areaKey, idx);
+                                handleFieldChange(areaKey, idx, 'catatan', result.catatan);
+                                handleFieldChange(areaKey, idx, 'rekomendasi', result.rekomendasi);
+                              }}
+                              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-kemenag-green hover:bg-kemenag-green-light rounded-lg transition-colors"
+                              title="Generate Catatan & Rekomendasi berdasarkan Keterangan"
+                            >
+                              <Sparkles size={14} /> Generate dari Keterangan
+                            </button>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
                               <label className="block text-xs text-gray-500 mb-1">Catatan Pengawas</label>
                               <select
