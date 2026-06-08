@@ -51,9 +51,9 @@ export default function Layout({ children }) {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-kemenag-green text-white transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 overflow-y-auto scrollbar-hide`}>
-        {/* Logo */}
-        <div className="p-4 border-b border-green-700">
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-kemenag-green text-white transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 flex flex-col`}>
+        {/* Logo - Fixed */}
+        <div className="p-4 border-b border-green-700 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-lg font-bold text-kemenag-gold">SI-PANDU ZI</h1>
@@ -66,13 +66,14 @@ export default function Layout({ children }) {
           </div>
         </div>
 
-        {/* User Info */}
-        <div className="p-4 border-b border-green-700">
+        {/* User Info - Fixed */}
+        <div className="p-4 border-b border-green-700 flex-shrink-0">
           <p className="text-sm font-medium truncate">{user?.name}</p>
           <p className="text-xs text-green-300 capitalize">{user?.role === 'ketua' ? 'Ketua Pokjawas' : user?.role}</p>
         </div>
 
-        {/* Menu */}
+        {/* Menu + Footer - Scrollable tanpa scrollbar */}
+        <div className="flex-1 overflow-y-auto scrollbar-hide">
         <nav className="py-2">
           {filteredMenu.map(item => {
             const Icon = item.icon;
@@ -108,6 +109,7 @@ export default function Layout({ children }) {
             <p>Dibuat oleh : <span className="font-medium text-green-100">Subariyanto, S.Pd, M.Pd.I.</span></p>
             <p>Ketua Pokjawas Madrasah Kab. Jember</p>
           </div>
+        </div>
         </div>
       </aside>
 
