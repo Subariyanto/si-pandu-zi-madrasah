@@ -104,7 +104,7 @@ export default function Layout({ children }) {
             <LogOut size={18} />
             <span>Logout</span>
           </button>
-          <div className="mt-3 px-2 text-[10px] text-green-300 leading-relaxed">
+          <div className="mt-3 px-2 text-[10px] text-green-300 leading-relaxed text-center">
             <p>Aplikasi ini dibuat oleh :</p>
             <p className="font-medium text-green-100">Subariyanto, S.Pd, M.Pd.I.</p>
             <p>Ketua Pokjawas Madrasah</p>
