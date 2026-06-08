@@ -156,7 +156,7 @@ export default function ChecklistPage() {
                       return (
                         <div key={idx} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                           <p className="font-medium text-gray-800 dark:text-white mb-3">{idx + 1}. {indikator}</p>
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                             <div>
                               <label className="block text-xs text-gray-500 mb-1">Status</label>
                               <select
@@ -183,6 +183,8 @@ export default function ChecklistPage() {
                               <label className="block text-xs text-gray-500 mb-1">Skor</label>
                               <input type="text" value={item.skor} readOnly className="input-field text-sm bg-gray-100" />
                             </div>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                             <div>
                               <label className="block text-xs text-gray-500 mb-1">Catatan Pengawas</label>
                               <select
@@ -201,7 +203,7 @@ export default function ChecklistPage() {
                                 placeholder="Pilih di atas atau ketik manual..."
                               />
                             </div>
-                            <div className="md:col-span-2">
+                            <div>
                               <label className="block text-xs text-gray-500 mb-1">Rekomendasi Tindak Lanjut</label>
                               <select
                                 onChange={(e) => { if (e.target.value) handleFieldChange(areaKey, idx, 'rekomendasi', e.target.value); }}
