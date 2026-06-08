@@ -3,7 +3,49 @@ import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { v4 as uuidv4 } from 'uuid';
 import { formatDate } from '../utils/helpers';
-import { Plus, Edit, Trash2, Search, X, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, X, Eye, ChevronDown } from 'lucide-react';
+
+const OPSI_MATERI = [
+  'Penyusunan dokumen Zona Integritas',
+  'Pembangunan area layanan Bebas Korupsi (WBK)',
+  'Pembangunan area layanan WBBM',
+  'Penguatan Manajemen Perubahan',
+  'Penataan Tatalaksana (SOP dan e-government)',
+  'Penataan Sistem Manajemen SDM',
+  'Penguatan Pengawasan Internal',
+  'Penguatan Akuntabilitas Kinerja',
+  'Peningkatan Kualitas Pelayanan Publik',
+];
+
+const OPSI_PERMASALAHAN = [
+  'Dokumen ZI belum lengkap dan belum ter-update',
+  'SDM belum memahami indikator penilaian ZI',
+  'SOP layanan belum tersusun atau belum disosialisasikan',
+  'Pengawasan internal belum berjalan optimal',
+  'Sarana prasarana pelayanan publik belum memadai',
+  'Belum ada tim kerja/pokja ZI yang aktif',
+  'Inovasi pelayanan belum terdokumentasi',
+];
+
+const OPSI_REKOMENDASI = [
+  'Segera melengkapi dokumen bukti dukung ZI sesuai komponen',
+  'Mengadakan sosialisasi dan workshop ZI untuk seluruh pegawai',
+  'Menyusun dan mengesahkan SOP pelayanan',
+  'Membentuk tim pokja ZI dan menyusun rencana aksi',
+  'Meningkatkan sarana pelayanan dan menyediakan ruang pengaduan',
+  'Melakukan survei kepuasan masyarakat secara berkala',
+  'Mendokumentasikan inovasi pelayanan publik',
+];
+
+const OPSI_TINDAK_LANJUT = [
+  'Menyusun dan mengunggah dokumen bukti dukung dalam 2 minggu',
+  'Melaksanakan rapat koordinasi tim ZI minggu depan',
+  'Melakukan revisi SOP dan sosialisasi ke seluruh pegawai',
+  'Menyiapkan bahan presentasi untuk evaluasi ZI',
+  'Melaksanakan survei kepuasan layanan bulan depan',
+  'Membuat laporan progress ZI per komponen',
+  'Melaporkan hasil tindak lanjut pada pendampingan berikutnya',
+];
 
 export default function PendampinganPage() {
   const { pendampingan, setPendampingan, madrasah, pengawas } = useData();
@@ -185,19 +227,35 @@ export default function PendampinganPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Materi Pendampingan</label>
-                <textarea value={formData.materi} onChange={(e) => setFormData({...formData, materi: e.target.value})} className="input-field" rows="2" required />
+                <select onChange={(e) => { if (e.target.value) setFormData({...formData, materi: e.target.value}); }} className="input-field mb-1" value="">
+                  <option value="">-- Pilih contoh materi --</option>
+                  {OPSI_MATERI.map((o, i) => <option key={i} value={o}>{o}</option>)}
+                </select>
+                <textarea value={formData.materi} onChange={(e) => setFormData({...formData, materi: e.target.value})} className="input-field" rows="2" required placeholder="Pilih di atas atau ketik manual..." />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Permasalahan</label>
-                <textarea value={formData.permasalahan} onChange={(e) => setFormData({...formData, permasalahan: e.target.value})} className="input-field" rows="2" />
+                <select onChange={(e) => { if (e.target.value) setFormData({...formData, permasalahan: e.target.value}); }} className="input-field mb-1" value="">
+                  <option value="">-- Pilih contoh permasalahan --</option>
+                  {OPSI_PERMASALAHAN.map((o, i) => <option key={i} value={o}>{o}</option>)}
+                </select>
+                <textarea value={formData.permasalahan} onChange={(e) => setFormData({...formData, permasalahan: e.target.value})} className="input-field" rows="2" placeholder="Pilih di atas atau ketik manual..." />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rekomendasi</label>
-                <textarea value={formData.rekomendasi} onChange={(e) => setFormData({...formData, rekomendasi: e.target.value})} className="input-field" rows="2" />
+                <select onChange={(e) => { if (e.target.value) setFormData({...formData, rekomendasi: e.target.value}); }} className="input-field mb-1" value="">
+                  <option value="">-- Pilih contoh rekomendasi --</option>
+                  {OPSI_REKOMENDASI.map((o, i) => <option key={i} value={o}>{o}</option>)}
+                </select>
+                <textarea value={formData.rekomendasi} onChange={(e) => setFormData({...formData, rekomendasi: e.target.value})} className="input-field" rows="2" placeholder="Pilih di atas atau ketik manual..." />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tindak Lanjut</label>
-                <textarea value={formData.tindakLanjut} onChange={(e) => setFormData({...formData, tindakLanjut: e.target.value})} className="input-field" rows="2" />
+                <select onChange={(e) => { if (e.target.value) setFormData({...formData, tindakLanjut: e.target.value}); }} className="input-field mb-1" value="">
+                  <option value="">-- Pilih contoh tindak lanjut --</option>
+                  {OPSI_TINDAK_LANJUT.map((o, i) => <option key={i} value={o}>{o}</option>)}
+                </select>
+                <textarea value={formData.tindakLanjut} onChange={(e) => setFormData({...formData, tindakLanjut: e.target.value})} className="input-field" rows="2" placeholder="Pilih di atas atau ketik manual..." />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>

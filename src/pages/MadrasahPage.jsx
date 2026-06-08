@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { exportToPDF, exportToExcel } from '../utils/helpers';
+import { supabase } from '../lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
-import { Plus, Edit, Trash2, Search, Download, FileText, X, Eye } from 'lucide-react';
+import * as XLSX from 'xlsx';
+import { Plus, Edit, Trash2, Search, Download, FileText, X, Eye, Upload, FileSpreadsheet } from 'lucide-react';
 
 export default function MadrasahPage() {
   const { madrasah, setMadrasah, pengawas } = useData();
@@ -16,6 +18,8 @@ export default function MadrasahPage() {
   const [editData, setEditData] = useState(null);
   const [formData, setFormData] = useState(getEmptyForm());
   const [detailData, setDetailData] = useState(null);
+  const [importMsg, setImportMsg] = useState('');
+  const fileInputRef = useRef(null);
 
   function getEmptyForm() {
     return { nama: '', nsm: '', npsn: '', jenjang: 'MI', statusMadrasah: 'Swasta', kepalaMadrasah: '', hpKepala: '', email: '', alamat: '', kecamatan: '', pengawasId: '', pengawasNama: '', jumlahGuru: 0, jumlahSiswa: 0, statusZI: 'Belum Mulai' };
@@ -81,6 +85,74 @@ export default function MadrasahPage() {
     exportToPDF('DATA MADRASAH BINAAN', headers, data, 'data-madrasah.pdf');
   };
 
+  const handleDownloadTemplate = () => {
+    const template = [{
+      Nama: 'Contoh: MI Nurul Huda', NSM: '111235090001', NPSN: '60710001',
+      Jenjang: 'MI', Status_Madrasah: 'Swasta', Kepala_Madrasah: 'Ahmad Fauzi, S.Pd.I',
+      HP_Kepala: '081234567890', Email: 'mi.nurulhuda@kemenag.go.id',
+      Alamat: 'Jl. Masjid No. 1', Kecamatan: 'Sukowono',
+      Jumlah_Guru: 15, Jumlah_Siswa: 200, Status_ZI: 'Belum Mulai'
+    }];
+    exportToExcel(template, 'Template Madrasah', 'template-data-madrasah.xlsx');
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImportMsg('');
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const wb = XLSX.read(evt.target.result, { type: 'binary' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(ws);
+
+        if (jsonData.length === 0) {
+          setImportMsg('❌ File kosong atau format tidak sesuai');
+          return;
+        }
+
+        let imported = 0;
+        const newItems = [];
+        for (const row of jsonData) {
+          const item = {
+            id: uuidv4(),
+            nama: row.Nama || row.nama || '',
+            nsm: String(row.NSM || row.nsm || ''),
+            npsn: String(row.NPSN || row.npsn || ''),
+            jenjang: row.Jenjang || row.jenjang || 'MI',
+            statusMadrasah: row.Status_Madrasah || row.statusMadrasah || row.status_madrasah || 'Swasta',
+            kepalaMadrasah: row.Kepala_Madrasah || row.kepalaMadrasah || row.kepala_madrasah || '',
+            hpKepala: String(row.HP_Kepala || row.hpKepala || row.hp_kepala || ''),
+            email: row.Email || row.email || '',
+            alamat: row.Alamat || row.alamat || '',
+            kecamatan: row.Kecamatan || row.kecamatan || '',
+            pengawasId: '',
+            pengawasNama: '',
+            jumlahGuru: parseInt(row.Jumlah_Guru || row.jumlahGuru || row.jumlah_guru) || 0,
+            jumlahSiswa: parseInt(row.Jumlah_Siswa || row.jumlahSiswa || row.jumlah_siswa) || 0,
+            statusZI: row.Status_ZI || row.statusZI || row.status_zi || 'Belum Mulai',
+          };
+          if (item.nama) {
+            newItems.push(item);
+            imported++;
+          }
+        }
+
+        if (newItems.length > 0) {
+          setMadrasah(prev => [...prev, ...newItems]);
+        }
+
+        setImportMsg(`✅ Berhasil import ${imported} data madrasah`);
+      } catch (err) {
+        setImportMsg('❌ Gagal membaca file. Pastikan format Excel (.xlsx) sesuai template.');
+      }
+    };
+    reader.readAsBinaryString(file);
+    e.target.value = '';
+  };
+
   const statusZIColor = (status) => {
     switch (status) {
       case 'Selesai': return 'bg-green-100 text-green-700';
@@ -100,6 +172,17 @@ export default function MadrasahPage() {
               <Plus size={16} /> Tambah
             </button>
           )}
+          {hasRole('admin') && (
+            <>
+              <button onClick={() => fileInputRef.current?.click()} className="btn-primary flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
+                <Upload size={16} /> Import
+              </button>
+              <button onClick={handleDownloadTemplate} className="btn-secondary flex items-center gap-2">
+                <FileSpreadsheet size={16} /> Template
+              </button>
+              <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImport} className="hidden" />
+            </>
+          )}
           <button onClick={handleExportExcel} className="btn-gold flex items-center gap-2">
             <Download size={16} /> Excel
           </button>
@@ -108,6 +191,12 @@ export default function MadrasahPage() {
           </button>
         </div>
       </div>
+
+      {importMsg && (
+        <div className={`p-3 rounded-lg text-sm font-medium ${importMsg.startsWith('✅') ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+          {importMsg}
+        </div>
+      )}
 
       {/* Filters */}
       <div className="card">
