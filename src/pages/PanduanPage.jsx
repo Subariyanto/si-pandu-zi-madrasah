@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BookOpen, LogIn, Users, School, ClipboardCheck, Upload, FileCheck, Stethoscope, MessageSquare, AlertTriangle, FileText, BarChart3, Printer, Settings, Shield, LayoutDashboard, ChevronDown, ChevronRight, CheckCircle2, Info, Lightbulb, Phone } from 'lucide-react';
+import { BookOpen, LogIn, Users, School, ClipboardCheck, Upload, FileCheck, Stethoscope, MessageSquare, AlertTriangle, FileText, BarChart3, Printer, Settings, Shield, LayoutDashboard, ChevronDown, ChevronRight, CheckCircle2, Info, Lightbulb, Phone, Download } from 'lucide-react';
 
 const sections = [
   { id: 'tentang', label: 'Tentang Aplikasi', icon: Info },
@@ -8,8 +8,115 @@ const sections = [
   { id: 'alur', label: 'Alur Kerja', icon: CheckCircle2 },
   { id: 'menu', label: 'Panduan Per Menu', icon: LayoutDashboard },
   { id: 'tips', label: 'Tips Penting', icon: Lightbulb },
+  { id: 'template', label: 'Cara Mengisi Template', icon: FileText },
   { id: 'kontak', label: 'Kontak Bantuan', icon: Phone },
 ];
+
+const templateData = [
+  {
+    area: 'Area 1 - Manajemen Perubahan',
+    docs: [
+      { title: 'SK Tim Kerja Pembangunan ZI', guide: 'Isi nomor SK, tahun, nama anggota tim beserta jabatannya. Minimal 5 anggota (Ketua=Kamad, Sekretaris, 3 Anggota). Tandatangan Kepala Madrasah.' },
+      { title: 'Rencana Kerja Pembangunan ZI', guide: 'Isi program/kegiatan per 6 area perubahan. Cantumkan indikator keberhasilan, target, timeline (bulan), dan penanggung jawab per kegiatan.' },
+      { title: 'Notulen Sosialisasi ZI + Daftar Hadir', guide: 'Isi tanggal, waktu, tempat, pimpinan rapat, pembahasan, dan kesimpulan. Daftar hadir: nama, NIP/NUPTK, jabatan, tanda tangan semua peserta.' },
+      { title: 'SK Agen Perubahan', guide: 'Isi nama agen perubahan (minimal 1-3 orang), jabatan, dan perannya. Sertakan uraian tugas: role model, mendorong inovasi, laporan ke Kamad.' },
+      { title: 'Laporan Kegiatan Budaya Integritas', guide: 'Isi daftar kegiatan (apel pagi, ikrar, pembinaan karakter, keagamaan), waktu pelaksanaan, peserta, hasil/output. Sertakan dokumentasi foto.' },
+    ],
+  },
+  {
+    area: 'Area 2 - Penataan Tata Laksana',
+    docs: [
+      { title: 'Format SOP Layanan Madrasah', guide: 'Isi nomor SOP, tanggal pembuatan/revisi/efektif. Tulis tujuan, ruang lingkup, lalu isi tabel prosedur: kegiatan, pelaksana, waktu, output per langkah.' },
+      { title: 'Template Alur Layanan', guide: 'Isi jenis layanan, lalu lengkapi tabel per tahap (Pendaftaran \u2192 Verifikasi \u2192 Proses \u2192 Output \u2192 Penyerahan). Centang media publikasi yang digunakan.' },
+      { title: 'Laporan Layanan Digital', guide: 'Isi daftar layanan digital yang ada (pendaftaran online, rapor, pengumuman, dll). Cantumkan platform, URL/link, status aktif/tidak, dan jumlah pengguna.' },
+      { title: 'Format Informasi Layanan', guide: 'Isi tabel semua jenis layanan: persyaratan, waktu penyelesaian, biaya (umumnya gratis), petugas, dan media publikasi.' },
+      { title: 'Format Evaluasi SOP', guide: 'Isi periode evaluasi, evaluator. Tabel: nama SOP, tanggal terbit, apakah masih relevan (Ya/Tidak), perlu revisi (Ya/Tidak), catatan evaluasi.' },
+    ],
+  },
+  {
+    area: 'Area 3 - Penataan Manajemen SDM',
+    docs: [
+      { title: 'Format Data SDM Madrasah', guide: 'Isi seluruh data GTK: nama, NIP/NUPTK, pangkat/golongan, jabatan, kualifikasi pendidikan, status sertifikasi, status kepegawaian. Isi rekapitulasi di bawah.' },
+      { title: 'SK Pembagian Tugas', guide: 'Isi nomor SK, daftar semua guru/tendik beserta tugas pokok dan tugas tambahan. Cantumkan jam mengajar per minggu.' },
+      { title: 'Rekap Kehadiran Pegawai', guide: 'Isi per bulan: nama pegawai, jumlah hadir/izin/sakit/tanpa keterangan, hitung persentase kehadiran. Centang sistem pemantauan yang digunakan.' },
+      { title: 'Laporan Pengembangan Kompetensi', guide: 'Isi daftar pelatihan/workshop/bimtek yang diikuti pegawai: nama peserta, jenis kegiatan, penyelenggara, waktu, durasi (JP), ada tidaknya sertifikat.' },
+      { title: 'Format Penilaian Kinerja', guide: 'Isi daftar pegawai dengan nilai SKP (60%) dan Perilaku Kerja (40%). Hitung nilai akhir dan tentukan predikat: Sangat Baik (>120), Baik (110-120), Cukup (80-109), Kurang (<80).' },
+    ],
+  },
+  {
+    area: 'Area 4 - Penguatan Akuntabilitas',
+    docs: [
+      { title: 'Format Perencanaan Kinerja (RKM)', guide: 'Isi sasaran strategis madrasah, indikator kinerja, target, program/kegiatan, anggaran, dan penanggung jawab per sasaran.' },
+      { title: 'Penetapan Target Kinerja', guide: 'Isi per aspek (Akademik, Non-Akademik, Mutu Layanan, Tata Kelola, SDM): indikator, kondisi saat ini, target yang akan dicapai, dan strategi pencapaiannya.' },
+      { title: 'Format Laporan Kinerja Madrasah', guide: 'Isi per sasaran: indikator, target, realisasi, capaian (%), dan keterangan. Tambahkan analisis dan kendala di bawah tabel.' },
+      { title: 'Format Evaluasi Kinerja', guide: 'Isi tabel: program/kegiatan, target, realisasi, % capaian, faktor pendukung, faktor penghambat, dan rekomendasi.' },
+      { title: 'Format Tindak Lanjut Evaluasi', guide: 'Isi temuan hasil evaluasi, rekomendasi yang diberikan, rencana tindak lanjut, penanggung jawab, target waktu penyelesaian, dan status (Selesai/Proses).' },
+    ],
+  },
+  {
+    area: 'Area 5 - Penguatan Pengawasan',
+    docs: [
+      { title: 'Format Sosialisasi Anti Gratifikasi', guide: 'Isi tanggal, narasumber, jumlah peserta. Centang materi sosialisasi dan media yang digunakan. Lampirkan notulen, daftar hadir, foto.' },
+      { title: 'Format Kanal Pengaduan', guide: 'Isi daftar kanal yang tersedia (kotak fisik, WA, email, website, medsos): detail alamat/nomor, PIC, status aktif. Tulis mekanisme penanganan.' },
+      { title: 'Pakta Integritas', guide: 'Isi nama seluruh pegawai madrasah pada tabel. Semua pegawai menandatangani pernyataan komitmen anti KKN dan anti gratifikasi.' },
+      { title: 'Format Laporan Pengawasan Internal', guide: 'Isi per aspek (keuangan, disiplin, pelayanan, pengadaan): temuan, tingkat risiko (Tinggi/Sedang/Rendah), rekomendasi, tindak lanjut.' },
+      { title: 'Format Tindak Lanjut Pengaduan', guide: 'Isi nomor tiket, tanggal masuk, isi pengaduan, tindak lanjut yang dilakukan, tanggal selesai, status. Hitung rata-rata waktu penyelesaian.' },
+    ],
+  },
+  {
+    area: 'Area 6 - Peningkatan Kualitas Pelayanan',
+    docs: [
+      { title: 'Standar Pelayanan Madrasah', guide: 'Isi tabel per jenis layanan: persyaratan, prosedur singkat, waktu penyelesaian, biaya (umumnya gratis), dan produk layanan yang dihasilkan.' },
+      { title: 'Maklumat Pelayanan', guide: 'Isi nama madrasah, tanggal, tanda tangan Kepala Madrasah. Maklumat dipasang di tempat strategis. Centang media publikasi.' },
+      { title: 'Format Survei Kepuasan Masyarakat', guide: 'Bagikan ke responden (orang tua/siswa/masyarakat). Isi penilaian 1-5 per unsur pelayanan. Kumpulkan dan rekap hasilnya.' },
+      { title: 'Format Tindak Lanjut Pengaduan Masyarakat', guide: 'Isi per pengaduan: tanggal, sumber, isi, analisis, tindak lanjut, hasil, status. Hitung waktu penyelesaian rata-rata dan tingkat penyelesaian (%).' },
+      { title: 'Format Laporan Inovasi Pelayanan', guide: 'Isi nama inovasi, bidang, tahun mulai. Tulis latar belakang, ide/solusi, manfaat/dampak, pihak yang terlibat, keberlanjutan. Isi tabel sebelum vs sesudah inovasi.' },
+    ],
+  },
+];
+
+function TemplatePanduanSection() {
+  const [expandedArea, setExpandedArea] = useState(null);
+
+  return (
+    <div className="space-y-4">
+      <h2 className="text-xl font-bold text-kemenag-green flex items-center gap-2"><Download size={22} /> Cara Mengisi Template Dokumen</h2>
+      <p className="text-sm text-gray-600 dark:text-gray-400">Panduan pengisian 30 template dokumen yang tersedia di menu <strong>Download Format Dokumen</strong>. Klik setiap area untuk melihat panduan per dokumen.</p>
+      <div className="space-y-2">
+        {templateData.map((area, idx) => {
+          const isExpanded = expandedArea === idx;
+          return (
+            <div key={idx} className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+              <button
+                onClick={() => setExpandedArea(isExpanded ? null : idx)}
+                className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
+              >
+                <div className="w-9 h-9 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
+                  <FileText size={18} className="text-kemenag-green" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-800 dark:text-white text-sm">{area.area}</h4>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{area.docs.length} dokumen</p>
+                </div>
+                {isExpanded ? <ChevronDown size={18} className="text-gray-400" /> : <ChevronRight size={18} className="text-gray-400" />}
+              </button>
+              {isExpanded && (
+                <div className="px-4 pb-4 pt-0 ml-12 space-y-3">
+                  {area.docs.map((doc, i) => (
+                    <div key={i} className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 border border-green-100 dark:border-green-800">
+                      <h5 className="font-semibold text-gray-800 dark:text-white text-sm mb-1">{i + 1}. {doc.title}</h5>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{doc.guide}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 export default function PanduanPage() {
   const [activeSection, setActiveSection] = useState('tentang');
@@ -110,7 +217,7 @@ export default function PanduanPage() {
                 ))}
               </div>
               <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                <p className="text-xs text-yellow-800 dark:text-yellow-300"><strong>⚠️ Catatan:</strong> Akun dibuat oleh Admin. Jika lupa password, hubungi Admin. Sistem otomatis logout setelah 30 menit tidak aktif.</p>
+                <p className="text-xs text-yellow-800 dark:text-yellow-300"><strong>⚠️ Catatan:</strong> Akun dibuat oleh Admin. Jika lupa password, hubungi Admin.</p>
               </div>
             </div>
           </div>
@@ -233,6 +340,10 @@ export default function PanduanPage() {
               ))}
             </div>
           </div>
+        )}
+
+        {activeSection === 'template' && (
+          <TemplatePanduanSection />
         )}
 
         {activeSection === 'kontak' && (
