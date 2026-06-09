@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import {
-  LayoutDashboard, Users, School, ClipboardCheck, Upload, FileCheck,
+  LayoutDashboard, Users, School, ClipboardCheck, Upload, FileCheck, Download,
   Stethoscope, MessageSquare, AlertTriangle, FileText, BarChart3,
   Printer, Settings, LogOut, Menu, X, Sun, Moon, Shield, BookOpen
 } from 'lucide-react';
@@ -15,6 +15,7 @@ const menuItems = [
   { path: '/pendampingan', label: 'Pendampingan ZI', icon: Shield, roles: ['admin', 'ketua', 'pengawas'] },
   { path: '/checklist', label: 'Checklist Eviden ZI', icon: ClipboardCheck, roles: ['admin', 'ketua', 'pengawas', 'madrasah'] },
   { path: '/upload-eviden', label: 'Upload Eviden', icon: Upload, roles: ['admin', 'pengawas', 'madrasah'] },
+  { path: '/download-format', label: 'Download Format Dokumen', icon: Download, roles: ['admin', 'ketua', 'pengawas', 'madrasah'] },
   { path: '/kartu-kendali', label: 'Kartu Kendali', icon: FileCheck, roles: ['admin', 'ketua', 'pengawas'] },
   { path: '/klinik-zi', label: 'Klinik ZI', icon: Stethoscope, roles: ['admin', 'ketua', 'pengawas'] },
   { path: '/survei', label: 'Survei Kepuasan', icon: MessageSquare, roles: ['admin', 'ketua', 'pengawas', 'madrasah'] },
