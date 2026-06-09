@@ -1,9 +1,7 @@
-import { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext(null);
-
-const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 menit auto-logout
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
@@ -11,7 +9,6 @@ export function AuthProvider({ children }) {
     return saved ? JSON.parse(saved) : null;
   });
   const [loading, setLoading] = useState(false);
-  const timerRef = useRef(null);
 
   useEffect(() => {
     if (user) {
@@ -19,28 +16,6 @@ export function AuthProvider({ children }) {
     } else {
       localStorage.removeItem('sipandu_user');
     }
-  }, [user]);
-
-  // Inactivity auto-logout
-  useEffect(() => {
-    if (!user) return;
-
-    const resetTimer = () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => {
-        logout();
-        alert('Sesi Anda telah berakhir karena tidak aktif selama 30 menit. Silakan login kembali.');
-      }, INACTIVITY_TIMEOUT);
-    };
-
-    const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'mousemove'];
-    events.forEach(event => window.addEventListener(event, resetTimer));
-    resetTimer();
-
-    return () => {
-      events.forEach(event => window.removeEventListener(event, resetTimer));
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
   }, [user]);
 
   const login = async (identifier, password) => {
