@@ -449,13 +449,14 @@ function downloadDoc(doc, areaNama) {
     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
     <head><meta charset="utf-8"><title>${doc.nama}</title>
     <style>
-      body { font-family: 'Times New Roman', serif; font-size: 12pt; margin: 2cm; }
+      @page { size: A4; margin: 0.8in 0.8in 0.8in 0.8in; }
+      body { font-family: 'Times New Roman', serif; font-size: 12pt; margin: 0.8in; }
       table { border-collapse: collapse; width: 100%; margin: 10px 0; }
-      th, td { border: 1px solid #000; padding: 6px 8px; font-size: 11pt; }
+      th, td { border: 1px solid #000; padding: 6px 8px; font-size: 12pt; font-family: 'Times New Roman', serif; }
       th { background-color: #f0f0f0; font-weight: bold; text-align: center; }
-      h2, h3 { margin: 10px 0; }
-      p { margin: 5px 0; }
-      ol, ul { margin: 5px 0 5px 20px; }
+      h2, h3 { margin: 10px 0; font-family: 'Times New Roman', serif; }
+      p { margin: 5px 0; font-family: 'Times New Roman', serif; font-size: 12pt; }
+      ol, ul { margin: 5px 0 5px 20px; font-family: 'Times New Roman', serif; font-size: 12pt; }
     </style></head>
     <body>
       <div style="text-align:center;margin-bottom:20px;">
