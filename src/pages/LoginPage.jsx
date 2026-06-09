@@ -72,7 +72,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-xs text-gray-400 text-center mt-4">Auto-logout setelah 30 menit tidak aktif</p>
 
           <div className="mt-6 pt-4 border-t border-gray-200">
             <p className="text-xs text-gray-500 text-center">Hubungi Admin jika belum memiliki akun</p>
