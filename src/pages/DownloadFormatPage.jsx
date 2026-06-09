@@ -448,17 +448,20 @@ function downloadDoc(doc, areaNama) {
   const html = `
     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
     <head><meta charset="utf-8"><title>${doc.nama}</title>
+    <xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml>
+    <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
     <style>
-      @page { size: A4; margin: 0.8in 0.8in 0.8in 0.8in; }
-      body { font-family: 'Times New Roman', serif; font-size: 12pt; margin: 0.8in; }
-      table { border-collapse: collapse; width: 100%; margin: 10px 0; }
-      th, td { border: 1px solid #000; padding: 6px 8px; font-size: 12pt; font-family: 'Times New Roman', serif; }
+      @page { size: 210mm 297mm; mso-page-orientation: portrait; margin: 2cm 2cm 2cm 2cm; }
+      body { font-family: 'Times New Roman', serif; font-size: 12pt; margin: 0; }
+      div.Section1 { page: Section1; }
+      table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+      th, td { border: 1px solid #000; padding: 4px 6px; font-size: 12pt; font-family: 'Times New Roman', serif; }
       th { background-color: #f0f0f0; font-weight: bold; text-align: center; }
-      h2, h3 { margin: 10px 0; font-family: 'Times New Roman', serif; }
-      p { margin: 5px 0; font-family: 'Times New Roman', serif; font-size: 12pt; }
-      ol, ul { margin: 5px 0 5px 20px; font-family: 'Times New Roman', serif; font-size: 12pt; }
+      h2, h3 { margin: 8px 0; font-family: 'Times New Roman', serif; font-size: 12pt; }
+      p { margin: 4px 0; font-family: 'Times New Roman', serif; font-size: 12pt; }
+      ol, ul { margin: 4px 0 4px 20px; font-family: 'Times New Roman', serif; font-size: 12pt; }
     </style></head>
-    <body>
+    <body><div class="Section1">
       <div style="text-align:center;margin-bottom:20px;">
         <p style="font-size:11pt;margin:0;">KEMENTERIAN AGAMA REPUBLIK INDONESIA</p>
         <p style="font-size:11pt;margin:0;">KANTOR KEMENTERIAN AGAMA KABUPATEN JEMBER</p>
@@ -474,7 +477,7 @@ function downloadDoc(doc, areaNama) {
           <td width="50%" style="border:none;text-align:center;">..............................., .................. 20....<br/>Kepala Madrasah,<br/><br/><br/><br/>............................................<br/>NIP. ................................</td>
         </tr>
       </table>
-    </body></html>`
+    </div></body></html>`
 
   const blob = new Blob([html], { type: 'application/msword' })
   const url = URL.createObjectURL(blob)
