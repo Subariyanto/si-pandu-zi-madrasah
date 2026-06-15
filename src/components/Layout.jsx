@@ -2,11 +2,10 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { getTrialStatus, TRIAL_DAYS } from '../lib/license';
 import {
   LayoutDashboard, Users, School, ClipboardCheck, Upload, FileCheck, Download,
   Stethoscope, MessageSquare, AlertTriangle, FileText, BarChart3,
-  Printer, Settings, LogOut, Menu, X, Sun, Moon, Shield, BookOpen, Key
+  Printer, Settings, LogOut, Menu, X, Sun, Moon, Shield, BookOpen
 } from 'lucide-react';
 
 const menuItems = [
@@ -25,7 +24,6 @@ const menuItems = [
   { path: '/rekapitulasi', label: 'Rekapitulasi Capaian', icon: BarChart3, roles: ['admin', 'ketua', 'pengawas'] },
   { path: '/cetak-export', label: 'Cetak / Export', icon: Printer, roles: ['admin', 'ketua', 'pengawas'] },
   { path: '/pengaturan', label: 'Pengaturan Akun', icon: Settings, roles: ['admin', 'ketua', 'pengawas', 'madrasah'] },
-  { path: '/lisensi', label: 'Lisensi / Aktivasi', icon: Key, roles: ['admin', 'ketua', 'pengawas', 'madrasah'] },
   { path: '/panduan', label: 'Panduan Penggunaan', icon: BookOpen, roles: ['admin', 'ketua', 'pengawas', 'madrasah'] },
 ];
 
@@ -147,29 +145,9 @@ export default function Layout({ children }) {
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          <TrialBanner />
           {children}
         </main>
       </div>
-    </div>
-  );
-}
-
-function TrialBanner() {
-  const s = getTrialStatus();
-  if (s.tier === 'full') return null;
-  if (s.isExpired) {
-    return (
-      <div className="mb-4 p-3 rounded-lg bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-800 dark:text-red-200 text-sm flex items-center justify-between flex-wrap gap-2">
-        <span><b>⛔ Trial habis.</b> Aplikasi sekarang read-only. Aktivasi kode FULL untuk lanjut.</span>
-        <Link to="/lisensi" className="px-3 py-1 bg-red-600 text-white rounded text-xs font-semibold hover:bg-red-700">Aktivasi FULL</Link>
-      </div>
-    );
-  }
-  return (
-    <div className="mb-4 p-3 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 border-l-4 border-yellow-500 text-yellow-800 dark:text-yellow-200 text-sm flex items-center justify-between flex-wrap gap-2">
-      <span>🆓 Mode <b>TRIAL</b> · sisa <b>{s.daysLeft} hari</b> dari {TRIAL_DAYS}. Mutasi data tetap aktif.</span>
-      <Link to="/lisensi" className="px-3 py-1 bg-yellow-600 text-white rounded text-xs font-semibold hover:bg-yellow-700">Aktivasi FULL</Link>
     </div>
   );
 }
