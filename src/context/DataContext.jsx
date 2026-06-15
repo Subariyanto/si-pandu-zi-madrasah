@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
+import { guardMutation } from '../lib/license';
 
 const DataContext = createContext(null);
 
@@ -281,16 +282,22 @@ export function DataProvider({ children }) {
     }
   }, [eviden]);
 
+  // License-guarded setters: refuse writes when trial expired
+  const guard = (kind, setter) => (updater) => {
+    if (!guardMutation(kind)) return;
+    return setter(updater);
+  };
+
   const value = {
-    pengawas, setPengawas,
-    madrasah, setMadrasah,
-    checklist, setChecklist,
-    pendampingan, setPendampingan,
-    survei, setSurvei,
-    pengaduan, setPengaduan,
-    kartuKendali, setKartuKendali,
-    klinik, setKlinik,
-    eviden, setEviden,
+    pengawas, setPengawas: guard('pengawas', setPengawas),
+    madrasah, setMadrasah: guard('madrasah', setMadrasah),
+    checklist, setChecklist: guard('checklist', setChecklist),
+    pendampingan, setPendampingan: guard('pendampingan', setPendampingan),
+    survei, setSurvei,  // public form, never gated
+    pengaduan, setPengaduan,  // public form, never gated
+    kartuKendali, setKartuKendali: guard('kartuKendali', setKartuKendali),
+    klinik, setKlinik: guard('klinik', setKlinik),
+    eviden, setEviden: guard('eviden', setEviden),
     loading,
     refetch: fetchAllData,
   };

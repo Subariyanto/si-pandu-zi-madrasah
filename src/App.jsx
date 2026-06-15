@@ -21,6 +21,7 @@ import CetakExportPage from './pages/CetakExportPage';
 import PengaturanPage from './pages/PengaturanPage';
 import PanduanPage from './pages/PanduanPage';
 import DownloadFormatPage from './pages/DownloadFormatPage';
+import LisensiPage from './pages/LisensiPage';
 import PublikSurveiPage from './pages/PublikSurveiPage';
 import PublikPengaduanPage from './pages/PublikPengaduanPage';
 
@@ -58,6 +59,7 @@ function AppRoutes() {
       <Route path="/rekapitulasi" element={<ProtectedRoute><RekapitulasiPage /></ProtectedRoute>} />
       <Route path="/cetak-export" element={<ProtectedRoute><CetakExportPage /></ProtectedRoute>} />
       <Route path="/pengaturan" element={<ProtectedRoute><PengaturanPage /></ProtectedRoute>} />
+      <Route path="/lisensi" element={<ProtectedRoute><LisensiPage /></ProtectedRoute>} />
       <Route path="/panduan" element={<ProtectedRoute><PanduanPage /></ProtectedRoute>} />
 
       {/* Default redirect */}
