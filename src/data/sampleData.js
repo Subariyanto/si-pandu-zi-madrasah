@@ -2,7 +2,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 export const defaultUsers = [
-  { id: '1', email: 'admin@zipokjawas.id', password: 'admin123', role: 'admin', name: 'Administrator' },
+  { id: '1', email: 'admin@zipokjawas.id', password: '@riyant1970', role: 'admin', name: 'Administrator' },
   { id: '2', email: 'ketua@zipokjawas.id', password: 'ketua123', role: 'ketua', name: 'H. Sulaiman, M.Pd.I' },
   { id: '3', email: 'pengawas@zipokjawas.id', password: 'pengawas123', role: 'pengawas', name: 'Ahmad Fauzi, S.Pd.I', pengawasId: 'p1' },
   { id: '4', email: 'madrasah@zipokjawas.id', password: 'madrasah123', role: 'madrasah', name: 'Hj. Fatimah, S.Ag', madrasahId: 'm1' },

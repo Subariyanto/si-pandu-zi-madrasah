@@ -86,7 +86,7 @@ export default function Login() {
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
             <p className="text-xs text-gray-500 dark:text-gray-400 text-center mb-3">Akun Demo:</p>
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <button onClick={() => { setEmail('admin@zipokjawas.id'); setPassword('admin123') }} className="px-2 py-1.5 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">
+              <button onClick={() => { setEmail('admin@zipokjawas.id'); setPassword('@riyant1970') }} className="px-2 py-1.5 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">
                 Admin
               </button>
               <button onClick={() => { setEmail('ketua@zipokjawas.id'); setPassword('ketua123') }} className="px-2 py-1.5 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">
